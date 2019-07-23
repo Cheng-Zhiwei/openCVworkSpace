@@ -12,5 +12,6 @@ int main()
 	imshow("Gray", Gray);
 	//不加此语句图片会一闪而过
 	waitKey(0);
+	destroyAllWindows();
 	return 0;
 }
