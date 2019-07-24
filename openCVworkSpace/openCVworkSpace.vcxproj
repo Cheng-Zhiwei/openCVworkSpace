@@ -128,7 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="readImage.cpp" />
+    <ClCompile Include="learningOpenCV.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VS_connet_github_method.txt" />

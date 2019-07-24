@@ -20,7 +20,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="readImage.cpp">
+    <ClCompile Include="learningOpenCV.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
