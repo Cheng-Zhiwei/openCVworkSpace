@@ -131,7 +131,6 @@
     <ClCompile Include="learningOpenCV.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="test.txt" />
     <Text Include="VS_connet_github_method.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
