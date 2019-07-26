@@ -282,275 +282,345 @@
 //
 //}
 
-//引用作为函数的形参
-#include <iostream>
-using namespace std;
-void swap1(int a, int b);
-void swap2(int *p1, int *p2);
-void swap3(int &a, int &b);
-int main() {
-	int num1, num2;
-	cout << "Input two integers: ";
-	cin >> num1 >> num2;
-	swap1(num1, num2);
-	cout << num1 << " " << num2 << endl;
-
-	cout << "Input two integers: ";
-	cin >> num1 >> num2;
-	swap2(&num1, &num2);
-	cout << num1 << " " << num2 << endl;
-
-	cout << "Input two integers: ";
-	cin >> num1 >> num2;
-	swap3(num1, num2);
-	cout << num1 << " " << num2 << endl;
-
-	system("pause");
-	return 0;
-}
-//直接传递参数内容
-void swap1(int a, int b) {
-	int temp = a;
-	a = b;
-	b = temp;
-}
-//传递指针
-void swap2(int *p1, int *p2) {
-	int temp = *p1;
-	*p1 = *p2;
-	*p2 = temp;
-}
-//按引用传参
-void swap3(int &a, int &b) {
-	int temp = a;
-	a = b;
-	b = temp;
-}
-
-
-
-
-
-
-
-//#include <opencv2/core.hpp>  //核心模块，定义了基本的数据结构和算术函数
-//#include <opencv2/core/utility.hpp>  //包含getTickFrequency()等函数
-//#include "opencv2/imgcodecs.hpp"  //图片编解码、加载保存之类的函数
-//#include <opencv2/highgui.hpp>  //视频捕捉、图像和视频的编码解码、图形交互界面的接口
-//#include <iostream>  //C++中用于数据的流式输入与输出的头文件
-//#include <sstream>  //使用stringsteam类型需要用到的头文件
-//
-////这里使用namespace命名空间，省去了之后代码中反复使用std::或cv::的麻烦
+////引用作为函数的形参
+//#include <iostream>
 //using namespace std;
-//using namespace cv;
+//void swap1(int a, int b);
+//void swap2(int *p1, int *p2);
+//void swap3(int &a, int &b);
+//int main() {
+//	int num1, num2;
+//	cout << "Input two integers: ";
+//	cin >> num1 >> num2;
+//	swap1(num1, num2);
+//	cout << num1 << " " << num2 << endl;
 //
-//void help() //静态函数，这个函数输出函数信息及命令行参数信息
+//	cout << "Input two integers: ";
+//	cin >> num1 >> num2;
+//	swap2(&num1, &num2);
+//	cout << num1 << " " << num2 << endl;
 //
-//{
-//	cout
-//		<< "\n--------------------------------------------------------------------------" << endl
-//		<< "This program shows how to scan image objects in OpenCV (cv::Mat). As use case"
-//		<< " we take an input image and divide the native color palette (255) with the " << endl
-//		<< "input. Shows C operator[] method, iterators and at function for on-the-fly item address calculation." << endl
-//		<< "Usage:" << endl
-//		<< "./howToScanImages imageNameToUse divideWith [G]" << endl
-//		<< "if you add a G parameter the image is processed in gray scale" << endl
-//		<< "--------------------------------------------------------------------------" << endl
-//		<< endl;
-//}
+//	cout << "Input two integers: ";
+//	cin >> num1 >> num2;
+//	swap3(num1, num2);
+//	cout << num1 << " " << num2 << endl;
 //
-//
-///*下面是C操作符[]（指针）、迭代器、即时项目地址计算三种方法函数声明，
-//其中的&读作引用，相当于给函数或变量名起了第二个名字，引用初始化某个变量后，
-//可以使用该引用名称或原变量名称指向该变量，和指针有一定的区别，具体请参考C++引用*/
-//
-//Mat& ScanImageAndReduceC(Mat& I, const uchar* table);//通过C指针方式扫描
-//Mat& ScanImageAndReduceIterator(Mat& I, const uchar* table);//通过迭代器
-//Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar * table);//通过at函数
-//
-//
-//int main(int argc, char* argv[])
-//{
-//	help();
-//	if (argc < 3)
-//	{
-//		cout << "Not enough parameters" << endl;
-//		return -1;
-//	}
-//
-//	Mat I, J;
-//
-//	if (argc == 4 && !strcmp(argv[3], "G"))//读取图形
-//		I = imread(argv[1], IMREAD_GRAYSCALE);
-//	else
-//		I = imread(argv[1], IMREAD_COLOR);
-//
-//	if (!I.data)
-//	{
-//		cout << "The image" << argv[1] << " could not be loaded." << endl;
-//		return -1;
-//	}
-//
-//	int divideWith; // convert our input string to number - C++ style
-//	stringstream s;
-//	s << argv[2];
-//	s >> divideWith;
-//	if (!s)
-//	{
-//		cout << "Invalid number entered for dividing. " << endl;
-//		return -1;
-//	}
-//
-//	uchar table[256];
-//	for (int i = 0; i < 256; ++i)
-//		table[i] = divideWith * (i / divideWith);
-//
-//	const int times = 100;
-//	double t;
-//
-//	t = (double)getTickCount();
-//
-//	for (int i = 0; i < times; ++i)
-//		J = ScanImageAndReduceC(I.clone(), table);
-//
-//	t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-//	t /= times;
-//
-//	cout << "Time of reducing with the C operator [] (averaged for "
-//		<< times << " runs): " << t << " milliseconds." << endl;
-//
-//	t = (double)getTickCount();
-//
-//	for (int i = 0; i < times; ++i)
-//		J = ScanImageAndReduceIterator(I.clone(), table);
-//
-//	t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-//	t /= times;
-//
-//	cout << "Time of reducing with the iterator (averaged for "
-//		<< times << " runs): " << t << " milliseconds." << endl;
-//
-//	t = (double)getTickCount();
-//
-//	for (int i = 0; i < times; ++i)
-//		ScanImageAndReduceRandomAccess(I.clone(), table);
-//
-//	t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-//	t /= times;
-//
-//	cout << "Time of reducing with the on-the-fly address generation - at function (averaged for "
-//		<< times << " runs): " << t << " milliseconds." << endl;
-//
-//	Mat lookUpTable(1, 256, CV_8U);
-//	uchar* p = lookUpTable.data;
-//	for (int i = 0; i < 256; ++i)
-//		p[i] = table[i];
-//
-//	t = (double)getTickCount();
-//
-//	for (int i = 0; i < times; ++i)
-//		LUT(I, lookUpTable, J);
-//
-//	t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-//	t /= times;
-//
-//	cout << "Time of reducing with the LUT function (averaged for "
-//		<< times << " runs): " << t << " milliseconds." << endl;
+//	system("pause");
 //	return 0;
 //}
-//
-//Mat& ScanImageAndReduceC(Mat& I, const uchar* const table)
-//{
-//	// accept only char type matrices
-//	CV_Assert(I.depth() != sizeof(uchar));
-//
-//	int channels = I.channels();
-//
-//	int nRows = I.rows * channels;
-//	int nCols = I.cols;
-//
-//	if (I.isContinuous())
-//	{
-//		nCols *= nRows;
-//		nRows = 1;
-//	}
-//
-//	int i, j;
-//	uchar* p;
-//	for (i = 0; i < nRows; ++i)
-//	{
-//		p = I.ptr<uchar>(i);
-//		for (j = 0; j < nCols; ++j)
-//		{
-//			p[j] = table[p[j]];
-//		}
-//	}
-//	return I;
+////直接传递参数内容
+//void swap1(int a, int b) {
+//	int temp = a;
+//	a = b;
+//	b = temp;
+//}
+////传递指针
+//void swap2(int *p1, int *p2) {
+//	int temp = *p1;
+//	*p1 = *p2;
+//	*p2 = temp;
+//}
+////按引用传参
+//void swap3(int &a, int &b) {
+//	int temp = a;
+//	a = b;
+//	b = temp;
+//}
+
+
+////引用作为函数返回值
+/*运行程序后得到的结果为nu=20，num2=20，过程如下：
+首先num1=10,然后把使用函数，int &n = num1,n和num1代表同一块内存的值，
+当n=n+10后，n=20，即num1=20，然后num2 = num1 = 20*/
+//#include <iostream>
+//using namespace std;
+//int& plus10(int &n) {
+//	n = n + 10;
+//	return n;
 //}
 //
-//Mat& ScanImageAndReduceIterator(Mat& I, const uchar* const table)
-//{
-//	// accept only char type matrices
-//	CV_Assert(I.depth() != sizeof(uchar));
+//int main() {
+//	int num1 = 10;
+//	int num2 = plus10(num1);
+//	cout << num1 << " " << num2 << endl;
 //
-//	const int channels = I.channels();
-//	switch (channels)
-//	{
-//	case 1:
-//	{
-//		MatIterator_<uchar> it, end;
-//		for (it = I.begin<uchar>(), end = I.end<uchar>(); it != end; ++it)
-//			*it = table[*it];
-//		break;
-//	}
-//	case 3:
-//	{
-//		MatIterator_<Vec3b> it, end;
-//		for (it = I.begin<Vec3b>(), end = I.end<Vec3b>(); it != end; ++it)
-//		{
-//			(*it)[0] = table[(*it)[0]];
-//			(*it)[1] = table[(*it)[1]];
-//			(*it)[2] = table[(*it)[2]];
-//		}
-//	}
-//	}
-//
-//	return I;
+//	system("pause");
+//	return 0;
 //}
-//
-//Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar* const table)
-//{
-//	// accept only char type matrices
-//	CV_Assert(I.depth() != sizeof(uchar));
-//
-//	const int channels = I.channels();
-//	switch (channels)
-//	{
-//	case 1:
-//	{
-//		for (int i = 0; i < I.rows; ++i)
-//			for (int j = 0; j < I.cols; ++j)
-//				I.at<uchar>(i, j) = table[I.at<uchar>(i, j)];
-//		break;
-//	}
-//	case 3:
-//	{
-//		Mat_<Vec3b> _I = I;
-//
-//		for (int i = 0; i < I.rows; ++i)
-//			for (int j = 0; j < I.cols; ++j)
-//			{
-//				_I(i, j)[0] = table[_I(i, j)[0]];
-//				_I(i, j)[1] = table[_I(i, j)[1]];
-//				_I(i, j)[2] = table[_I(i, j)[2]];
-//			}
-//		I = _I;
-//		break;
-//	}
-//	}
-//
-//	return I;
-//}
+
+
+
+
+
+
+
+
+
+
+
+#include <opencv2/core.hpp>  //核心模块，定义了基本的数据结构和算术函数
+#include <opencv2/core/utility.hpp>  //包含getTickFrequency()等函数
+#include "opencv2/imgcodecs.hpp"  //图片编解码、加载保存之类的函数
+#include <opencv2/highgui.hpp>  //视频捕捉、图像和视频的编码解码、图形交互界面的接口
+#include <iostream>  //C++中用于数据的流式输入与输出的头文件
+#include <sstream>  //使用stringsteam类型需要用到的头文件
+
+	using namespace std;
+	using namespace cv;
+
+	static void help() //静态函数，这个函数输出函数信息及命令行参数信息
+	{
+		cout
+			<< "\n--------------------------------------------------------------------------" << endl
+			<< "This program shows how to scan image objects in OpenCV (cv::Mat). As use case"
+			<< " we take an input image and divide the native color palette (255) with the " << endl
+			<< "input. Shows C operator[] method, iterators and at function for on-the-fly item address calculation." << endl
+			<< "Usage:" << endl
+			<< "./how_to_scan_images <imageNameToUse> <divideWith> [G]" << endl
+			<< "if you add a G parameter the image is processed in gray scale" << endl
+			<< "--------------------------------------------------------------------------" << endl
+			<< endl;
+	}
+
+
+
+	/*下面是C操作符[]（指针）、迭代器、即时项目地址计算三种方法函数声明，
+	其中的&读作引用，相当于给函数或变量名起了第二个名字，引用初始化某个变量后，
+	可以使用该引用名称或原变量名称指向该变量，和指针有一定的区别，具体请参考C++引用*/
+
+
+	//Mat& 返回Mat类型返回值的引用
+	Mat& ScanImageAndReduceC(Mat& I, const uchar* table);//通过C指针方式扫描
+	Mat& ScanImageAndReduceIterator(Mat& I, const uchar* table);//通过迭代器
+	Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar * table);//通过at函数
+
+	// argc是命令行总的参数个数，argv[]是argc个参数，其中第0个参数是程序的全名，后面跟的用户输入的参数
+	int main(int argc, char* argv[])
+	{
+		help();
+		if (argc < 3)//判断输入参数是否合法，如果个数小于3个，则输出参数不够
+		{
+			cout << "Not enough parameters" << endl;
+			return -1;
+		}
+
+		Mat I, J; //I为输入矩阵；J为输出矩阵
+
+		//int strcmp(const char *s1, const char *s2);
+	   //返回值：若s1、s2字符串相等，则返回零；若s1大于s2，则返回大于零的数；否则，则返回小于零的数。
+		if (argc == 4 && !strcmp(argv[3], "G"))
+			I = imread(argv[1], IMREAD_GRAYSCALE);
+		else
+			I = imread(argv[1], IMREAD_COLOR);
+
+		if (I.empty())
+		{
+			cout << "The image" << argv[1] << " could not be loaded." << endl;
+			return -1;
+		}
+
+	
+		int divideWith = 0;  // 将我们输入的字符串转换为数字 -C++风格
+		stringstream s; //这里用到了stringstream
+		s << argv[2]; //将第三个参数复制给字符串
+		s >> divideWith;//将字符串转化为数字
+
+
+
+
+
+		if (!s || !divideWith)
+		{
+			cout << "Invalid number entered for dividing. " << endl;
+			return -1;
+		}
+
+		uchar table[256];//建立一张颜色空间缩减的表格，其实就是数组，方便后边查找赋值
+		for (int i = 0; i < 256; ++i)
+			table[i] = (uchar)(divideWith * (i / divideWith));
+		//! [dividewith]
+
+
+
+		const int times = 100;//定义常量，即值不会改变的量。常量的值为100，目的是计算执行100次的平均时间
+		double t;//平均执行时间
+
+
+		////////////////////C程序运行时间////////////////////
+		t = (double)getTickCount();
+
+		for (int i = 0; i < times; ++i)
+		{
+			cv::Mat clone_i = I.clone();
+			J = ScanImageAndReduceC(clone_i, table);
+		}
+
+		//1000 * 总次数 / 一秒内重复的次数 = 时间(ms)
+		t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		t /= times;
+		cout << "Time of reducing with the C operator [] (averaged for "
+			<< times << " runs): " << t << " milliseconds." << endl;
+
+
+		////////////////////Iterator程序运行时间////////////////////
+		t = (double)getTickCount();
+
+		for (int i = 0; i < times; ++i)
+		{
+			cv::Mat clone_i = I.clone();
+			J = ScanImageAndReduceIterator(clone_i, table);
+		}
+
+
+	
+		//1000 * 总次数 / 一秒内重复的次数 = 时间(ms)
+		t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		t /= times;
+
+		cout << "Time of reducing with the iterator (averaged for "
+			<< times << " runs): " << t << " milliseconds." << endl;
+
+
+
+		////////////////////////////////////////////////////////////
+		t = (double)getTickCount();
+
+		for (int i = 0; i < times; ++i)
+		{
+			cv::Mat clone_i = I.clone();
+			ScanImageAndReduceRandomAccess(clone_i, table);
+		}
+
+		t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		t /= times;
+
+		cout << "Time of reducing with the on-the-fly address generation - at function (averaged for "
+			<< times << " runs): " << t << " milliseconds." << endl;
+
+
+
+		//////////////////////////LUT运行时间//////////////////////////////////////
+		//! [table-init]
+		Mat lookUpTable(1, 256, CV_8U);
+		uchar* p = lookUpTable.ptr();
+		for (int i = 0; i < 256; ++i)
+			p[i] = table[i];
+		//! [table-init]
+
+		t = (double)getTickCount();
+
+		for (int i = 0; i < times; ++i)
+			//! [table-use]
+			LUT(I, lookUpTable, J);
+		//! [table-use]
+
+		t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		t /= times;
+
+		cout << "Time of reducing with the LUT function (averaged for "
+			<< times << " runs): " << t << " milliseconds." << endl;
+		return 0;
+	}
+
+	//! [scan-c]
+	Mat& ScanImageAndReduceC(Mat& I, const uchar* const table)
+	{
+		// accept only char type matrices
+		CV_Assert(I.depth() == CV_8U);
+
+		int channels = I.channels();
+
+		int nRows = I.rows;
+		int nCols = I.cols * channels;
+
+		if (I.isContinuous())
+		{
+			nCols *= nRows;
+			nRows = 1;
+		}
+
+		int i, j;
+		uchar* p;
+		for (i = 0; i < nRows; ++i)
+		{
+			p = I.ptr<uchar>(i);
+			for (j = 0; j < nCols; ++j)
+			{
+				p[j] = table[p[j]];
+			}
+		}
+		return I;
+	}
+	//! [scan-c]
+
+	//! [scan-iterator]
+	Mat& ScanImageAndReduceIterator(Mat& I, const uchar* const table)
+	{
+		// accept only char type matrices
+		CV_Assert(I.depth() == CV_8U);
+
+		const int channels = I.channels();
+		switch (channels)
+		{
+		case 1:
+		{
+			MatIterator_<uchar> it, end;
+			for (it = I.begin<uchar>(), end = I.end<uchar>(); it != end; ++it)
+				*it = table[*it];
+			break;
+		}
+		case 3:
+		{
+			MatIterator_<Vec3b> it, end;
+			for (it = I.begin<Vec3b>(), end = I.end<Vec3b>(); it != end; ++it)
+			{
+				(*it)[0] = table[(*it)[0]];
+				(*it)[1] = table[(*it)[1]];
+				(*it)[2] = table[(*it)[2]];
+			}
+		}
+		}
+
+		return I;
+	}
+	//! [scan-iterator]
+
+	//! [scan-random]
+	Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar* const table)
+	{
+		// accept only char type matrices
+		CV_Assert(I.depth() == CV_8U);
+
+		const int channels = I.channels();
+		switch (channels)
+		{
+		case 1:
+		{
+			for (int i = 0; i < I.rows; ++i)
+				for (int j = 0; j < I.cols; ++j)
+					I.at<uchar>(i, j) = table[I.at<uchar>(i, j)];
+			break;
+		}
+		case 3:
+		{
+			Mat_<Vec3b> _I = I;
+
+			for (int i = 0; i < I.rows; ++i)
+				for (int j = 0; j < I.cols; ++j)
+				{
+					_I(i, j)[0] = table[_I(i, j)[0]];
+					_I(i, j)[1] = table[_I(i, j)[1]];
+					_I(i, j)[2] = table[_I(i, j)[2]];
+				}
+			I = _I;
+			break;
+		}
+		}
+
+		return I;
+	}
+	//! [scan-random]
+
 
 
 
