@@ -1,0 +1,106 @@
+///////////////////////////////////////	图像矩阵掩码操作//////////////////////////////////
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+
+using namespace std;
+using namespace cv;
+
+//static void help(char* progName)
+//{
+//	cout << endl
+//		<< "This program shows how to filter images with mask: the write it yourself and the"
+//		<< "filter2d way. " << endl
+//		<< "Usage:" << endl
+//		<< progName << " [image_path -- default ../data/lena.jpg] [G -- grayscale] " << endl << endl;
+//}
+
+
+void Sharpen(const Mat& myImage, Mat& Result);
+
+int main()
+{
+	
+	Mat src, dst0, dst1;
+
+	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_GRAYSCALE);
+
+	namedWindow("Input", WINDOW_AUTOSIZE);
+	namedWindow("Output", WINDOW_AUTOSIZE);
+
+	imshow("Input", src);
+
+	double t = (double)getTickCount();
+
+	Sharpen(src, dst0);//函数
+
+	t = ((double)getTickCount() - t) / getTickFrequency();//计时
+	cout << "Hand written function time passed in seconds: " << t << endl;
+
+
+	imshow("Output", dst0);
+	waitKey(0);
+
+
+
+	//构造核
+	Mat kernel = (Mat_<char>(3, 3) << 0, -1, 0,
+		-1, 5, -1,
+		0, -1, 0);
+	
+	t = (double)getTickCount();
+
+
+	filter2D(src, dst1, src.depth(), kernel);
+	t = ((double)getTickCount() - t) / getTickFrequency();
+	cout << "Built-in filter2D time passed in seconds:     " << t << endl;
+
+	imshow("Output", dst1);
+
+	waitKey();
+	return 0;
+
+}
+
+
+
+//基本方法
+void Sharpen(const Mat& myImage, Mat& Result)
+{
+
+	CV_Assert(myImage.depth() == CV_8U);  // 只接受8位图（uchar）
+  
+
+	const int nChannels = myImage.channels();
+	Result.create(myImage.size(), myImage.type());//创建了一个与输入有着相同大小和类型的输出图像
+
+
+	for (int j = 1; j < myImage.rows - 1; ++j)
+	{
+		const uchar* previous = myImage.ptr<uchar>(j - 1);//前一行地址
+		const uchar* current = myImage.ptr<uchar>(j);//当前行地址
+		const uchar* next = myImage.ptr<uchar>(j + 1);//后一行地址
+
+		uchar* output = Result.ptr<uchar>(j);//获取j行的首地址
+
+		for (int i = nChannels; i < nChannels*(myImage.cols - 1); ++i)
+		{
+
+			//saturte_cast，防止数据溢出，例如if a<0, a=0,if a>255, a=255;
+			*output++ = saturate_cast<uchar>(5 * current[i]
+				- current[i - nChannels] - current[i + nChannels] - previous[i] - next[i]);
+		}
+	}
+	
+
+	//! [borders]
+	/*在图像的边界上，上面给出的公式会访问不存在的像素位置（比如(0, -1)）。
+	因此我们的公式对边界点来说是未定义的。一种简单的解决方法，是不对这些边界点使用掩码，而直接把它们设为0：*/
+	Result.row(0).setTo(Scalar(0));
+	Result.row(Result.rows - 1).setTo(Scalar(0));
+	Result.col(0).setTo(Scalar(0));
+	Result.col(Result.cols - 1).setTo(Scalar(0));
+	//! [borders]
+}
+//! [basic_method]

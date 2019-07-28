@@ -18,6 +18,12 @@
     <Text Include="VS_connet_github_method.txt">
       <Filter>源文件</Filter>
     </Text>
+    <Text Include="02_ScanImage.txt">
+      <Filter>源文件</Filter>
+    </Text>
+    <Text Include="03_Mask_operations_on_matrices.txt">
+      <Filter>源文件</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="learningOpenCV.cpp">
