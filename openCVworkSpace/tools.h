@@ -4,6 +4,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+
 using namespace cv;
 using namespace std;
 
@@ -12,3 +13,6 @@ Mat& contrastBrightness(Mat& I, double& a, double& b);
 Mat& contrastBrightnessByC(Mat& I, double& a, double& b);
 Mat& contrastBrightnessByRA(Mat& I, double& c, double& d);
 Mat& contrastBrightnessByOfficial(Mat& I, double& c, double& d);
+
+/*Ù¤ÂíÐ£Õý*/
+Mat gammaResived(Mat& img, double& gamma);

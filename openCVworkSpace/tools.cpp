@@ -133,3 +133,18 @@ Mat& contrastBrightnessByOfficial(Mat& I, double& c, double& d)
 	return I_clone;
 }
 
+
+
+/////////////////////////伽马校正////////////////////////
+Mat gammaResived(Mat& img, double& gamma) //这里没有用Mat& 作为函数的返回值，可能原因是经过LUT函数返回的变量的问题
+{
+
+	Mat lookUpTable(1, 256, CV_8U);
+	uchar* p = lookUpTable.ptr();
+	for (int i = 0; i < 256; ++i)
+		p[i] = saturate_cast<uchar>(pow(i / 255.0, gamma) * 255.0);
+	Mat res;
+	LUT(img, lookUpTable, res);//这里
+
+	return res;
+}

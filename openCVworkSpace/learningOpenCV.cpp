@@ -759,43 +759,43 @@
 #include "tools.h"
 
 
-int main()
-{
-	/// 读入用户提供的图像
-	Mat image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
-	Mat image_0 = image.clone();
-	Mat new_image = Mat::zeros(image.size(), image.type());
-	Mat new_image_0 = Mat::zeros(image.size(), image.type());
-
-	
-	double alpha, beta;
-	/// 初始化
-	cout << " Basic Linear Transforms " << endl;
-	cout << "-------------------------" << endl;
-	cout << "* Enter the alpha value [1.0-3.0]: ";
-	cin >> alpha;
-	cout << "* Enter the beta value [0-100]: ";
-	cin >> beta;
-
-	/// 执行运算 new_image(i,j) = alpha*image(i,j) + beta
-
-	new_image = contrastBrightnessByOfficial(image_0, alpha, beta);
-	
-	new_image_0 = contrastBrightnessByC(image_0, alpha, beta);//使用opencv自带的函数
-
-	
-	imshow("Original Image", image);
-	imshow("New Image", new_image);
-	imshow("New Image2", new_image_0);
-
-	bool Match = matIsEqual(new_image, new_image_0);
-
-	cout << "the matrix is :"<< Match << endl;
-
-
-	waitKey(0);
-	return 0;
-}
+//int main()
+//{
+//	/// 读入用户提供的图像
+//	Mat image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
+//	Mat image_0 = image.clone();
+//	Mat new_image = Mat::zeros(image.size(), image.type());
+//	Mat new_image_0 = Mat::zeros(image.size(), image.type());
+//
+//	
+//	double alpha, beta;
+//	/// 初始化
+//	cout << " Basic Linear Transforms " << endl;
+//	cout << "-------------------------" << endl;
+//	cout << "* Enter the alpha value [1.0-3.0]: ";
+//	cin >> alpha;
+//	cout << "* Enter the beta value [0-100]: ";
+//	cin >> beta;
+//
+//	/// 执行运算 new_image(i,j) = alpha*image(i,j) + beta
+//
+//	new_image = contrastBrightnessByOfficial(image_0, alpha, beta);
+//	
+//	new_image_0 = contrastBrightnessByC(image_0, alpha, beta);//使用opencv自带的函数
+//
+//	
+//	imshow("Original Image", image);
+//	imshow("New Image", new_image);
+//	imshow("New Image2", new_image_0);
+//
+//	bool Match = matIsEqual(new_image, new_image_0);
+//
+//	cout << "the matrix is :"<< Match << endl;
+//
+//
+//	waitKey(0);
+//	return 0;
+//}
 
 
 
@@ -835,3 +835,93 @@ int main()
 
 
 
+///////////////////////////伽马校正///////////////////////
+
+int main()
+{
+	Mat img_src, img_rsd;
+
+	double gamma = 0.4;
+
+	img_src = imread("E:\\openCV_Pictures\\fig8_buildings.jpg");
+
+	img_rsd = Mat::zeros(img_src.size(), img_src.type());
+
+	img_rsd = gammaResived(img_src, gamma);
+
+	namedWindow("input", 0);
+	namedWindow("output", 0);
+	imshow("input", img_src);
+	imshow("output", img_rsd);
+	waitKey(0);
+
+}
+
+
+
+
+//////////////////////////DFT/////////////////////
+#include "opencv2/core.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+static void help(void)
+{
+	cout << endl
+		<< "This program demonstrated the use of the discrete Fourier transform (DFT). " << endl
+		<< "The dft of an image is taken and it's power spectrum is displayed." << endl
+		<< "Usage:" << endl
+		<< "./discrete_fourier_transform [image_name -- default ../data/lena.jpg]" << endl;
+}
+int main(int argc, char ** argv)
+{
+	help();
+	const char* filename = argc >= 2 ? argv[1] : "../data/lena.jpg";
+	Mat I = imread(filename, IMREAD_GRAYSCALE);
+	if (I.empty()) {
+		cout << "Error opening image" << endl;
+		return -1;
+	}
+	Mat padded;                            //expand input image to optimal size
+	int m = getOptimalDFTSize(I.rows);
+	int n = getOptimalDFTSize(I.cols); // on the border add zero values
+	copyMakeBorder(I, padded, 0, m - I.rows, 0, n - I.cols, BORDER_CONSTANT, Scalar::all(0));
+	Mat planes[] = { Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F) };
+	Mat complexI;
+	merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
+	dft(complexI, complexI);            // this way the result may fit in the source matrix
+	// compute the magnitude and switch to logarithmic scale
+	// => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+	Mat magI = planes[0];
+	magI += Scalar::all(1);                    // switch to logarithmic scale
+	log(magI, magI);
+	// crop the spectrum, if it has an odd number of rows or columns
+	magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
+	// rearrange the quadrants of Fourier image  so that the origin is at the image center
+	int cx = magI.cols / 2;
+	int cy = magI.rows / 2;
+	Mat q0(magI, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+	Mat q1(magI, Rect(cx, 0, cx, cy));  // Top-Right
+	Mat q2(magI, Rect(0, cy, cx, cy));  // Bottom-Left
+	Mat q3(magI, Rect(cx, cy, cx, cy)); // Bottom-Right
+	Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
+	q0.copyTo(tmp);
+	q3.copyTo(q0);
+	tmp.copyTo(q3);
+	q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+	q2.copyTo(q1);
+	tmp.copyTo(q2);
+	normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
+											// viewable image form (float between values 0 and 1).
+	imshow("Input Image", I);    // Show the result
+	imshow("spectrum magnitude", magI);
+	waitKey();
+	return 0;
+}
