@@ -540,7 +540,7 @@
 //
 //	Mat src, dst0, dst1;
 //
-//	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_GRAYSCALE);
+//	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
 //
 //	namedWindow("Input", WINDOW_AUTOSIZE);
 //	namedWindow("Output", WINDOW_AUTOSIZE);
@@ -570,7 +570,7 @@
 //	t = ((double)getTickCount() - t) / getTickFrequency();
 //	cout << "Built-in filter2D time passed in seconds:     " << t << endl;
 //
-//	imshow("Output", dst1);
+//	imshow("Output1", dst1);
 //	waitKey(0);
 //	return 0;
 //}
@@ -604,8 +604,6 @@
 //				- 1 * previous[i] + 0 * previous[i - nChannels] + 0 * previous[i + nChannels]
 //				- 1 * next[i] + next[i - nChannels] + next[i + nChannels]);
 //
-//
-//
 //		}
 //	}
 //
@@ -622,35 +620,218 @@
 //}
 
 
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
 
-using namespace std;
-using namespace cv;
+////////////////////////////////////////////////////练习版
 
-void Sharpen(const Mat& src, Mat& img)
+//#include <opencv2/imgcodecs.hpp>
+//#include <opencv2/highgui.hpp>
+//#include <opencv2/imgproc.hpp>
+//#include <iostream>
+//
+//using namespace std;
+//using namespace cv;
+//
+//void Sharpen(const Mat& src, Mat& img)
+//{
+//	img.create(src.size(), src.type());
+//	int const nChanels = src.channels();
+//
+//	for (int j = 1; j < src.rows - 1; ++j)
+//	{
+//		const uchar* previous = src.ptr<uchar>(j - 1);
+//		const uchar* current = src.ptr<uchar>(j);
+//		const uchar* next = src.ptr<uchar>(j + 1);
+//
+//		uchar* output = img.ptr<uchar>(j);//获取output的首地址
+//
+//		for (int i = 1; i < nChanels*src.cols; ++i)
+//		{
+//			//先赋值后计算
+//			*output++ = saturate_cast < uchar>(5 * current[i] - (previous[i] + next[i] + current[i - 1] + current[i + 1]));
+//
+//		}
+//
+//	}
+//
+//	img.row(0).setTo(Scalar(0));//0行
+//	img.row(img.rows - 1).setTo(Scalar(0));//rows-1行即最后一行
+//	img.col(0).setTo(Scalar(0));//0列
+//	img.col(img.cols - 1).setTo(Scalar(0));//cols-1列，即最后一列
+//}
+//
+//
+//
+//
+//int main()
+//{
+//	Mat I, J, J1;
+//	Mat kernel = (Mat_<char>(3, 3) << 0, -1, 0, -1, 5, -1, 0, -1, 0);
+//
+//	I = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
+//
+//	filter2D(I, J1, I.depth(), kernel);
+//
+//	Sharpen(I, J);
+//
+//	imshow("input", I);
+//	imshow("output", J);
+//	imshow("output1", J1);
+//	waitKey(0);
+//	destroyAllWindows();
+//	return 0;
+//
+//}
+
+
+
+//////////////////////////////////对于两幅图片求和/////////////////////////////////
+
+//#include <opencv2/imgcodecs.hpp>
+//#include <opencv2/highgui.hpp>
+//#include <opencv2/imgproc.hpp>
+//#include <iostream>
+//
+//using namespace std;
+//using namespace cv;
+//
+//void addPictureMethod(Mat& src_0, Mat& src_1, double& a, Mat& dst)
+//{
+//	
+//	dst.create(src_0.size(), src_0.type());//创建一个与原始图像大小和类型相同的图像
+//
+//	int channels = src_0.channels();
+//	int nRows = src_0.rows * channels;
+//	int nCols = src_0.cols;
+//	nCols = nCols * nRows;
+//
+//	int j;
+//	uchar* p0;
+//	uchar* p1;
+//	uchar* p2;
+//
+//	p0 = src_0.ptr<uchar>(0);
+//	p1 = src_1.ptr<uchar>(0);
+//	p2 = dst.ptr<uchar>(0);
+//	
+//	for (j = 0; j < nCols; ++j)
+//	{
+//		p2[j] = (1 - a) * p0[j] + a * p1[j];
+//	}
+//
+//}
+//
+//
+//int main()
+//{
+//	Mat img_0, img_1, img_1_1, img_hand, img_func;
+//
+//	double alpha = 0.5; double beta; 
+//	beta = (1.0 - alpha);
+//
+//	img_0 = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
+//	img_1 = imread("E:\\openCV_Pictures\\fig6_views.jpg",1);
+//
+//	resize(img_1,img_1_1,img_0.size(), 0, 0, INTER_LINEAR);
+//
+//	addPictureMethod(img_0, img_1_1, alpha, img_hand);
+//	
+//	addWeighted(img_0, alpha, img_1_1, beta, 0.0, img_func);//使用内置函数addWeighted
+//
+//	imshow("1", img_0);
+//	imshow("2", img_1_1);
+//	imshow("3", img_hand);
+//	imshow("4", img_func);
+//	waitKey(0);
+//
+//	return 0;
+//}
+
+
+
+
+
+///////////////////////////////////////增强图片的对比度////////////////////////////////////
+
+
+
+/////////////////////////////////官方案例///////////////
+
+#include "tools.h"
+
+
+int main()
 {
-	img.create(src.size(), src.type());
-	int const nChanels = src.channels();
+	/// 读入用户提供的图像
+	Mat image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
+	Mat image_0 = image.clone();
+	Mat new_image = Mat::zeros(image.size(), image.type());
+	Mat new_image_0 = Mat::zeros(image.size(), image.type());
 
-	for (int j = 1; j < src.rows-1; ++j)
-	{
-		const uchar* previous = src.ptr<uchar>(j - 1);
-		const uchar* current = src.ptr<uchar>(j);
-		const uchar* next = src.ptr<uchar>(j + 1);
+	
+	double alpha, beta;
+	/// 初始化
+	cout << " Basic Linear Transforms " << endl;
+	cout << "-------------------------" << endl;
+	cout << "* Enter the alpha value [1.0-3.0]: ";
+	cin >> alpha;
+	cout << "* Enter the beta value [0-100]: ";
+	cin >> beta;
 
-		uchar* output = img.ptr<uchar>(j);//获取output的首地址
+	/// 执行运算 new_image(i,j) = alpha*image(i,j) + beta
 
-		for (int i = 1; i < nChanels*src.cols; ++i)
-		{
-			//先赋值后计算
-			*output++ = 5 * current[i] - (previous[i] + next[i] + current[i - 1] + current[i + 1]);
+	new_image = contrastBrightnessByOfficial(image_0, alpha, beta);
+	
+	new_image_0 = contrastBrightnessByC(image_0, alpha, beta);//使用opencv自带的函数
 
-		}
-	}
+	
+	imshow("Original Image", image);
+	imshow("New Image", new_image);
+	imshow("New Image2", new_image_0);
+
+	bool Match = matIsEqual(new_image, new_image_0);
+
+	cout << "the matrix is :"<< Match << endl;
 
 
-
+	waitKey(0);
+	return 0;
 }
+
+
+
+
+
+/////////////////////////////////////byMyself///////////////
+
+//int main()
+//{
+//	Mat I, J, K;
+//	
+//	double a = 2.2;
+//	double b = 50;
+//	
+//	I = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 1);
+//	Mat L = Mat::zeros(I.size(), I.type());
+//
+//	Mat I_clone = I.clone();
+//	Mat I_clone2 = I.clone();
+//
+//	J = contrastBrightnessByC(I_clone, a, b);
+//	K = contrastBrightnessByRA(I_clone, a, b);
+//
+//	I_clone2.convertTo(L, -1, 1.5, 3);//-1 表示和源矩阵数据类型一致；
+//
+//
+//	imshow("1", I);
+//	imshow("2", J);
+//	imshow("3", K);
+//	imshow("4", L);
+//
+//	waitKey(0);
+//	
+//	return 0;
+//}
+
+
+
+
