@@ -835,93 +835,238 @@
 
 
 
-///////////////////////////伽马校正///////////////////////
-
-int main()
-{
-	Mat img_src, img_rsd;
-
-	double gamma = 0.4;
-
-	img_src = imread("E:\\openCV_Pictures\\fig8_buildings.jpg");
-
-	img_rsd = Mat::zeros(img_src.size(), img_src.type());
-
-	img_rsd = gammaResived(img_src, gamma);
-
-	namedWindow("input", 0);
-	namedWindow("output", 0);
-	imshow("input", img_src);
-	imshow("output", img_rsd);
-	waitKey(0);
-
-}
-
-
+/////////////////////////////伽马校正///////////////////////
+//
+//int main()
+//{
+//	Mat img_src, img_rsd;
+//
+//	double gamma = 0.4;
+//
+//	img_src = imread("E:\\openCV_Pictures\\fig8_buildings.jpg");
+//
+//	img_rsd = Mat::zeros(img_src.size(), img_src.type());
+//
+//	img_rsd = gammaResived(img_src, gamma);
+//
+//	namedWindow("input", 0);
+//	namedWindow("output", 0);
+//	imshow("input", img_src);
+//	imshow("output", img_rsd);
+//	waitKey(0);
+//
+//}
 
 
-//////////////////////////DFT/////////////////////
-#include "opencv2/core.hpp"
+///////////////////////////////////////////////////////////////////////////////////////////////
+                                              /*DFT*/
+///////////////////////////////////////////////////////////////////////////////////////////////
+//#include "opencv2/core.hpp"
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//#include <iostream>
+//
+//using namespace cv;
+//using namespace std;
+//
+//static void help(void)
+//{
+//	cout << endl
+//		<< "This program demonstrated the use of the discrete Fourier transform (DFT). " << endl
+//		<< "The dft of an image is taken and it's power spectrum is displayed." << endl
+//		<< "Usage:" << endl
+//		<< "./discrete_fourier_transform [image_name -- default ../data/lena.jpg]" << endl;
+//}
+//int main()
+//{
+//
+//	Mat I = imread("E:\\openCV_Pictures\\fig7_txt_H.jpg", IMREAD_GRAYSCALE);
+//
+//	/*if (I.empty()) {
+//		cout << "Error opening image" << endl;
+//		return -1;
+//	}*/
+//
+//
+//	Mat padded;                            //expand input image to optimal size
+//	int m = getOptimalDFTSize(I.rows); //转换为2,3,5倍数相乘的形式；
+//	int n = getOptimalDFTSize(I.cols); 
+//
+//	//把灰度图像放在左上角,在右边和下边扩展图像,扩展部分填充为0
+//	copyMakeBorder(I, padded, 0, m - I.rows, 0, n - I.cols, BORDER_CONSTANT, Scalar::all(0));// on the border add zero values
+//
+//	//这里是获取了两个Mat,一个用于存放dft变换的实部，一个用于存放虚部,初始的时候,实部就是图像本身,虚部全为零
+//	Mat planes[] = { Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F) };
+//	Mat complexI;
+//
+//	//将几个单通道的mat融合成一个多通道的mat,这里融合的complexImg既有实部又有虚部
+//	merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
+//
+//	//对上边合成的mat进行傅里叶变换,支持原地操作,傅里叶变换结果为复数.通道1存的是实部,通道二存的是虚部
+//	dft(complexI, complexI);            // this way the result may fit in the source matrix
+//
+//
+//	/*这一部分是为了计算dft变换后的幅值，傅立叶变换的幅度值范围大到不适合在屏幕上显示。
+//	高值在屏幕上显示为白点，而低值为黑点，高低值的变化无法有效分辨。
+//	为了在屏幕上凸显出高低变化的连续性，我们可以用对数尺度来替换线性尺度, 
+//	以便于显示幅值, 计算公式如下*/
+//	// compute the magnitude and switch to logarithmic scale
+//	// => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+//	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+//	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+//	Mat magI = planes[0];
+//	magI += Scalar::all(1);                    // switch to logarithmic scale
+//	log(magI, magI);
+//
+//	//修剪频谱,如果图像的行或者列是奇数的话,那其频谱是不对称的,因此要修剪
+//	// crop the spectrum, if it has an odd number of rows or columns
+//	magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
+//	
+//
+//	//重新分配象限，使（0,0）移动到图像中心，  
+//	//在《数字图像处理》中，傅里叶变换之前要对源图像乘以（-1）^(x+y)进行中心化。  
+//	//这是是对傅里叶变换结果进行中心化
+//	// rearrange the quadrants of Fourier image  so that the origin is at the image center
+//	int cx = magI.cols / 2;
+//	int cy = magI.rows / 2;
+//	Mat q0(magI, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+//	Mat q1(magI, Rect(cx, 0, cx, cy));  // Top-Right
+//	Mat q2(magI, Rect(0, cy, cx, cy));  // Bottom-Left
+//	Mat q3(magI, Rect(cx, cy, cx, cy)); // Bottom-Right
+//	Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
+//	q0.copyTo(tmp);
+//	q3.copyTo(q0);
+//	tmp.copyTo(q3);
+//	q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+//	q2.copyTo(q1);
+//	tmp.copyTo(q2);
+//
+//	//这一步的目的仍然是为了显示,但是幅度值仍然超过可显示范围[0,1],我们使用 normalize() 函数将幅度归一化到可显示范围
+//	normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
+//											// viewable image form (float between values 0 and 1).
+//	imshow("Input Image", I);    // Show the result
+//	imshow("spectrum magnitude", magI);
+//	waitKey();
+//	return 0;
+//}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+                                   /*平滑图像*/
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+#include <iostream>
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
-#include <iostream>
-
-using namespace cv;
 using namespace std;
+using namespace cv;
+int DELAY_CAPTION = 1500;
+int DELAY_BLUR = 100;
+int MAX_KERNEL_LENGTH = 31;
 
-static void help(void)
+Mat src; Mat dst;
+char window_name[] = "Smoothing Demo";
+int display_caption(const char* caption);
+int display_dst(int delay);
+
+int main()
 {
-	cout << endl
-		<< "This program demonstrated the use of the discrete Fourier transform (DFT). " << endl
-		<< "The dft of an image is taken and it's power spectrum is displayed." << endl
-		<< "Usage:" << endl
-		<< "./discrete_fourier_transform [image_name -- default ../data/lena.jpg]" << endl;
-}
-int main(int argc, char ** argv)
-{
-	help();
-	const char* filename = argc >= 2 ? argv[1] : "../data/lena.jpg";
-	Mat I = imread(filename, IMREAD_GRAYSCALE);
-	if (I.empty()) {
-		cout << "Error opening image" << endl;
+	namedWindow(window_name, WINDOW_AUTOSIZE);
+	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR);
+	
+	if (src.empty())
+	{
+		printf(" Error opening image\n");
+		printf(" Usage: ./Smoothing [image_name -- default ../data/lena.jpg] \n");
 		return -1;
 	}
-	Mat padded;                            //expand input image to optimal size
-	int m = getOptimalDFTSize(I.rows);
-	int n = getOptimalDFTSize(I.cols); // on the border add zero values
-	copyMakeBorder(I, padded, 0, m - I.rows, 0, n - I.cols, BORDER_CONSTANT, Scalar::all(0));
-	Mat planes[] = { Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F) };
-	Mat complexI;
-	merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
-	dft(complexI, complexI);            // this way the result may fit in the source matrix
-	// compute the magnitude and switch to logarithmic scale
-	// => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
-	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
-	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
-	Mat magI = planes[0];
-	magI += Scalar::all(1);                    // switch to logarithmic scale
-	log(magI, magI);
-	// crop the spectrum, if it has an odd number of rows or columns
-	magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
-	// rearrange the quadrants of Fourier image  so that the origin is at the image center
-	int cx = magI.cols / 2;
-	int cy = magI.rows / 2;
-	Mat q0(magI, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
-	Mat q1(magI, Rect(cx, 0, cx, cy));  // Top-Right
-	Mat q2(magI, Rect(0, cy, cx, cy));  // Bottom-Left
-	Mat q3(magI, Rect(cx, cy, cx, cy)); // Bottom-Right
-	Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
-	q0.copyTo(tmp);
-	q3.copyTo(q0);
-	tmp.copyTo(q3);
-	q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
-	q2.copyTo(q1);
-	tmp.copyTo(q2);
-	normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
-											// viewable image form (float between values 0 and 1).
-	imshow("Input Image", I);    // Show the result
-	imshow("spectrum magnitude", magI);
-	waitKey();
+
+	if (display_caption("Original Image") != 0)//窗口显示"Original Image"
+	{
+		return 0;
+	}
+
+	dst = src.clone();//复制图像
+
+	if (display_dst(DELAY_CAPTION) != 0)
+	{
+		return 0;
+	}
+
+	if (display_caption("Homogeneous Blur") != 0)
+	{
+		return 0;
+	}
+
+	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+	{
+		blur(src, dst, Size(i, i), Point(-1, -1));
+		if (display_dst(DELAY_BLUR) != 0)
+		{
+			return 0;
+		}
+	}
+	if (display_caption("Gaussian Blur") != 0)
+	{
+		return 0;
+	}
+
+	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+	{
+		GaussianBlur(src, dst, Size(i, i), 0, 0);
+		if (display_dst(DELAY_BLUR) != 0)
+		{
+			return 0;
+		}
+	}
+
+	if (display_caption("Median Blur") != 0)
+	{
+		return 0;
+	}
+
+	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+	{
+		medianBlur(src, dst, i);
+		if (display_dst(DELAY_BLUR) != 0)
+		{
+			return 0;
+		}
+	}
+
+	if (display_caption("Bilateral Blur") != 0)
+	{
+		return 0;
+	}
+
+	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+	{
+		bilateralFilter(src, dst, i, i * 2, i / 2);
+		if (display_dst(DELAY_BLUR) != 0)
+		{
+			return 0;
+		}
+	}
+
+	display_caption("Done!");
+	return 0;
+}
+int display_caption(const char* caption)
+{
+	dst = Mat::zeros(src.size(), src.type());
+	putText(dst, caption,
+		Point(src.cols / 4, src.rows / 2),
+		FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+	return display_dst(DELAY_CAPTION);
+}
+int display_dst(int delay)
+{
+	imshow(window_name, dst);
+	int c = waitKey(delay);
+	if (c >= 0) { return -1; }
 	return 0;
 }
