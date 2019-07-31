@@ -1211,19 +1211,31 @@ int main()
 	Mat img_src, img_dst, img_dst1;
 	img_src = imread("E:\\openCV_Pictures\\fig9_font.jpg");
 
-	ErodingAndDilating(img_src, img_dst,para);//para ,1为膨胀，0为腐蚀；
-
-	erode(img_src, img_dst1);
+	//ErodingAndDilating(img_src, img_dst,para);//para ,1为膨胀，0为腐蚀；
 
 
+	/*形态学操作*/
+	/*Opening: MORPH_OPEN: 2
+	Closing : MORPH_CLOSE : 3
+	Gradient : MORPH_GRADIENT : 4
+	Top Hat : MORPH_TOPHAT: 5
+	Black Hat : MORPH_BLACKHAT: 6*/
+	int arr[5] = { 2,3,4,5,6 };
+	
+	Mat element = getStructuringElement(0, Size(3,3), Point(0, 0));
 
-	imshow("input", img_src);
-	imshow("output", img_dst);
+	for (int i = 0; i < 5; ++i) 
+	{
+		morphologyEx(img_src, img_dst, arr[i], element);
 
-	waitKey(0);
+		imshow("output", img_dst);
+		waitKey(0);
+	}
 
 	return 0;
 }
+
+
 
 
 
