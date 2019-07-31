@@ -646,7 +646,7 @@
 //
 //		for (int i = 1; i < nChanels*src.cols; ++i)
 //		{
-//			//先赋值后计算
+//			////先赋值后计算*output++,赋值完成后每次指向下一个地址；
 //			*output++ = saturate_cast < uchar>(5 * current[i] - (previous[i] + next[i] + current[i - 1] + current[i + 1]));
 //
 //		}
@@ -953,120 +953,280 @@
 
 
 
+
+
+
+
+//int main()
+//{
+//	Mat I, J;
+//
+//	I = imread("E:\\openCV_Pictures\\fig8_median.jpg");
+//
+//
+//	for (int i = 1; i < 31; i = i + 2)
+//	{
+//		medianBlur(I, J, i);//中值滤波
+//		
+//		imshow("1", J);
+//		waitKey();
+//	}
+//		
+//	return 0;
+//
+//}
+
+
+//
+//void dealMedianGary(const cv::Mat *src, cv::Mat *dst, int n, int m)
+//void MedianGary(cv::Mat *dst, int n, int m)
+//
+//int main(void)
+//{
+//	// [1] src读入图片
+//	cv::Mat src = cv::imread("pic3.jpg");
+//	// [2] dst目标图片
+//	cv::Mat dst;
+//	// [3] 中值滤波 RGB （5*5）的核大小
+//	dealMedianRGB(src, dst, 5, 5);
+//	// [4] 窗体显示
+//	imshow("src", src);
+//	imshow("dst", dst);
+//	waitKey(0);
+//	destroyAllWindows();
+//	return 0;
+//}
+//
+//
+//void dealMedianGary(const cv::Mat *src, cv::Mat *dst, int n, int m)
+//{
+//	// [1] 初始化
+//	*dst = (*src).clone();
+//	// [2] 彩色图片通道分离
+//	std::vector<cv::Mat> channels;
+//	cv::split(*src, channels);
+//	// [3] 滤波
+//	for (int i = 0; i < 3; i++) {
+//		MedianGary(&channels[i], n, m);
+//	}
+//	// [4] 合并返回
+//	cv::merge(channels, *dst);
+//	return;
+//}
+//
+//void MedianGary(cv::Mat *dst, int n, int m)
+//{
+//	unsigned char *_medianArray = NULL;
+//
+//	// [2] 初始化
+//	_medianArray = (unsigned char *)malloc(sizeof(unsigned char)*(n*m));
+//
+//	printf(" 5 * 5 start ... ... \n");
+//	// [2-1] 扫描
+//	for (int i = 0; i < dst->height; i++) {
+//		for (int j = 0; j < dst->width; j++) {
+//			// [2-2] 忽略边缘
+//			if ((i > 1) && (j > 1) && (i < dst->height - 2)
+//				&& (j < dst->width - 2))
+//			{
+//				// [2-3] 保存数组
+//				int _count = 2;
+//				for (int num = 0; num < (n*m); num += 5, _count--)
+//				{
+//					_medianArray[num] = *((unsigned char*)(dst->imageData + (i - _count)*dst->widthStep + (j - 2)));
+//					_medianArray[num + 1] = *((unsigned char*)(dst->imageData + (i - _count)*dst->widthStep + (j - 1)));
+//					_medianArray[num + 2] = *((unsigned char*)(dst->imageData + (i - _count)*dst->widthStep + (j)));
+//					_medianArray[num + 3] = *((unsigned char*)(dst->imageData + (i - _count)*dst->widthStep + (j + 1)));
+//					_medianArray[num + 4] = *((unsigned char*)(dst->imageData + (i - _count)*dst->widthStep + (j + 2)));
+//				}
+//				// [2-5] 求中值并保存
+//				*((unsigned char*)(dst->imageData + i * dst->widthStep + j)) = medianValue(_medianArray, (n*m));
+//			}//for[2-2]
+//		}
+//	}//for[2-1]
+//}
+
+
+
+
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////
-                                   /*平滑图像*/
+								   /*平滑图像*/
 ////////////////////////////////////////////////////////////////////////////////////////
 
+///官方例子
+//#include <iostream>
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//using namespace std;
+//using namespace cv;
+//int DELAY_CAPTION = 1500;
+//int DELAY_BLUR = 100;
+//int MAX_KERNEL_LENGTH = 31;
+//
+//Mat src; Mat dst;
+//char window_name[] = "Smoothing Demo";
+//int display_caption(const char* caption);
+//int display_dst(int delay);
+//
+//int main()
+//{
+//	namedWindow(window_name, WINDOW_AUTOSIZE);
+//	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR);
+//	
+//	if (src.empty())
+//	{
+//		printf(" Error opening image\n");
+//		printf(" Usage: ./Smoothing [image_name -- default ../data/lena.jpg] \n");
+//		return -1;
+//	}
+//
+//	if (display_caption("Original Image") != 0)//窗口显示"Original Image"
+//	{
+//		return 0;
+//	}
+//
+//	dst = src.clone();//复制图像
+//
+//	if (display_dst(DELAY_CAPTION) != 0)
+//	{
+//		return 0;
+//	}
+//
+//	if (display_caption("Homogeneous Blur") != 0)
+//	{
+//		return 0;
+//	}
+//
+//	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+//	{
+//		blur(src, dst, Size(i, i), Point(-1, -1));//归一化滤波
+//		if (display_dst(DELAY_BLUR) != 0)
+//		{
+//			return 0;
+//		}
+//	}
+//
+//	if (display_caption("Gaussian Blur") != 0)
+//	{
+//		return 0;
+//	}
+//
+//	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+//	{
+//		GaussianBlur(src, dst, Size(i, i), 0, 0);//高斯滤波
+//		if (display_dst(DELAY_BLUR) != 0)
+//		{
+//			return 0;
+//		}
+//	}
+//
+//	if (display_caption("Median Blur") != 0)
+//	{
+//		return 0;
+//	}
+//
+//	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+//	{
+//		medianBlur(src, dst, i);//中值滤波
+//		if (display_dst(DELAY_BLUR) != 0)
+//		{
+//			return 0;
+//		}
+//	}
+//
+//	if (display_caption("Bilateral Blur") != 0)
+//	{
+//		return 0;
+//	}
+//
+//	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
+//	{
+//		bilateralFilter(src, dst, i, i * 2, i / 2);//双边滤波
+//		if (display_dst(DELAY_BLUR) != 0)
+//		{
+//			return 0;
+//		}
+//	}
+//
+//	display_caption("Done!");
+//	return 0;
+//}
+//int display_caption(const char* caption)
+//{
+//	dst = Mat::zeros(src.size(), src.type());
+//	putText(dst, caption,
+//		Point(src.cols / 4, src.rows / 2),
+//		FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+//	return display_dst(DELAY_CAPTION);
+//}
+//int display_dst(int delay)
+//{
+//	imshow(window_name, dst);
+//	int c = waitKey(delay);
+//	if (c >= 0) { return -1; }
+//	return 0;
+//}
 
-#include <iostream>
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-using namespace std;
-using namespace cv;
-int DELAY_CAPTION = 1500;
-int DELAY_BLUR = 100;
-int MAX_KERNEL_LENGTH = 31;
 
-Mat src; Mat dst;
-char window_name[] = "Smoothing Demo";
-int display_caption(const char* caption);
-int display_dst(int delay);
+///练习版--（注：边缘图像不处理，核为3*3）
 
+#include "tools.h"
+
+//int main()
+//{
+//	Mat img_src, img_dst, img_dst1;
+//	img_src = imread("E:\\openCV_Pictures\\fig8_median.jpg");
+//
+//	MedianBlur(img_src, img_dst);
+//	medianBlur(img_src, img_dst1, 3);//中值滤波
+//
+//	int match = matIsEqual(img_dst, img_dst1);
+//
+//	if (match == 1)
+//		printf("The matrix is equal！");
+//	else
+//		printf("The matrix is not equal！");
+//
+//	imshow("input", img_src);
+//	imshow("output", img_dst);
+//	imshow("output1", img_dst1);
+//	waitKey(0);
+//
+//	return 0;
+//}
+
+
+
+
+/////////////////////////////////////膨胀和腐蚀//////////////////////
 int main()
 {
-	namedWindow(window_name, WINDOW_AUTOSIZE);
-	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR);
-	
-	if (src.empty())
-	{
-		printf(" Error opening image\n");
-		printf(" Usage: ./Smoothing [image_name -- default ../data/lena.jpg] \n");
-		return -1;
-	}
+	int para = 0;
+	Mat img_src, img_dst, img_dst1;
+	img_src = imread("E:\\openCV_Pictures\\fig9_font.jpg");
 
-	if (display_caption("Original Image") != 0)//窗口显示"Original Image"
-	{
-		return 0;
-	}
+	ErodingAndDilating(img_src, img_dst,para);//para ,1为膨胀，0为腐蚀；
 
-	dst = src.clone();//复制图像
+	erode(img_src, img_dst1);
 
-	if (display_dst(DELAY_CAPTION) != 0)
-	{
-		return 0;
-	}
 
-	if (display_caption("Homogeneous Blur") != 0)
-	{
-		return 0;
-	}
 
-	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
-	{
-		blur(src, dst, Size(i, i), Point(-1, -1));
-		if (display_dst(DELAY_BLUR) != 0)
-		{
-			return 0;
-		}
-	}
-	if (display_caption("Gaussian Blur") != 0)
-	{
-		return 0;
-	}
+	imshow("input", img_src);
+	imshow("output", img_dst);
 
-	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
-	{
-		GaussianBlur(src, dst, Size(i, i), 0, 0);
-		if (display_dst(DELAY_BLUR) != 0)
-		{
-			return 0;
-		}
-	}
+	waitKey(0);
 
-	if (display_caption("Median Blur") != 0)
-	{
-		return 0;
-	}
-
-	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
-	{
-		medianBlur(src, dst, i);
-		if (display_dst(DELAY_BLUR) != 0)
-		{
-			return 0;
-		}
-	}
-
-	if (display_caption("Bilateral Blur") != 0)
-	{
-		return 0;
-	}
-
-	for (int i = 1; i < MAX_KERNEL_LENGTH; i = i + 2)
-	{
-		bilateralFilter(src, dst, i, i * 2, i / 2);
-		if (display_dst(DELAY_BLUR) != 0)
-		{
-			return 0;
-		}
-	}
-
-	display_caption("Done!");
 	return 0;
 }
-int display_caption(const char* caption)
-{
-	dst = Mat::zeros(src.size(), src.type());
-	putText(dst, caption,
-		Point(src.cols / 4, src.rows / 2),
-		FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
-	return display_dst(DELAY_CAPTION);
-}
-int display_dst(int delay)
-{
-	imshow(window_name, dst);
-	int c = waitKey(delay);
-	if (c >= 0) { return -1; }
-	return 0;
-}
+
+
+
+
+
+

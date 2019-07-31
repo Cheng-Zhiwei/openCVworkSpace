@@ -148,3 +148,201 @@ Mat gammaResived(Mat& img, double& gamma) //ÕâÀïÃ»ÓĞÓÃMat& ×÷Îªº¯ÊıµÄ·µ»ØÖµ£¬¿ÉÄ
 
 	return res;
 }
+
+
+
+
+//////////////////////////////////ÖĞÖµ¼ÆËã
+uchar& getMedian(Mat& zone)
+{
+	uchar median;
+	uchar *p;
+	cv::sort(zone, zone, SORT_EVERY_ROW + SORT_ASCENDING);
+
+	int len = zone.cols;
+	int index = len / 2 + 1;
+
+	p = zone.ptr<uchar>(0);
+
+	median = p[index];
+
+	return median;
+}
+
+
+
+////////////////////////ÖĞÖµÂË²¨£¨3*3£©/////////////////////
+void MedianBlur(const Mat& src, Mat& img)
+{
+	img.create(src.size(), src.type());
+	int const nChanels = src.channels();
+
+	for (int j = 1; j < src.rows - 1; ++j)
+	{
+		const uchar* previous = src.ptr<uchar>(j - 1);
+		const uchar* current = src.ptr<uchar>(j);
+		const uchar* next = src.ptr<uchar>(j + 1);
+
+		uchar* output = img.ptr<uchar>(j);//»ñÈ¡outputµÄÊ×µØÖ·
+
+		for (int i = nChanels; i < nChanels*src.cols; ++i)//´ÓµÚ3¸öÏñËØÖµ¿ªÊ¼£¬¼´±ß¿òÏñËØ²»¼ÆËã
+		{
+
+			Mat C_rank = (Mat_<uchar>(1, 9) << current[i], previous[i], next[i],
+				current[i - nChanels], previous[i - nChanels], next[i - nChanels],
+				current[i + nChanels], previous[i + nChanels], next[i + nChanels]);
+
+			*output++ = getMedian(C_rank);
+		}
+	}
+
+	img.row(0).setTo(Scalar(0));//0ĞĞ
+	img.row(img.rows - 1).setTo(Scalar(0));//rows-1ĞĞ¼´×îºóÒ»ĞĞ
+	img.col(0).setTo(Scalar(0));//0ÁĞ
+	img.col(img.cols - 1).setTo(Scalar(0));//cols-1ÁĞ£¬¼´×îºóÒ»ÁĞ
+}
+
+
+
+
+////////////////////////////////É¨ÃèÍ¼Ïñ////////////////////
+
+/*ÀûÓÃcÖ¸Õë*/
+Mat& ScanImageAndReduceC(Mat& I, const uchar* const table)
+{
+	// accept only char type matrices
+	CV_Assert(I.depth() == CV_8U);
+	int channels = I.channels();
+	int nRows = I.rows;
+	int nCols = I.cols * channels;
+	if (I.isContinuous())
+	{
+		nCols *= nRows;
+		nRows = 1;
+	}
+	int i, j;
+	uchar* p;
+	for (i = 0; i < nRows; ++i)
+	{
+		p = I.ptr<uchar>(i);
+		for (j = 0; j < nCols; ++j)
+		{
+			p[j] = table[p[j]];//ÕâÀïÊÇ¶ÔÖğ¸öÏñËØµÄ²Ù×÷
+		}
+	}
+	return I;
+}
+
+
+/*ÀûÓÃµü´úÆ÷*/
+Mat& ScanImageAndReduceIterator(Mat& I, const uchar* const table)
+{
+	// accept only char type matrices
+	CV_Assert(I.depth() == CV_8U);
+	const int channels = I.channels();
+	switch (channels)
+	{
+	case 1:
+	{
+		MatIterator_<uchar> it, end;
+		for (it = I.begin<uchar>(), end = I.end<uchar>(); it != end; ++it)
+			*it = table[*it];
+		break;
+	}
+	case 3:
+	{
+		MatIterator_<Vec3b> it, end;
+		for (it = I.begin<Vec3b>(), end = I.end<Vec3b>(); it != end; ++it)
+		{
+			(*it)[0] = table[(*it)[0]];
+			(*it)[1] = table[(*it)[1]];
+			(*it)[2] = table[(*it)[2]];
+		}
+	}
+	}
+	return I;
+}
+
+
+
+
+/*ÀûÓÃrandomAccess*/
+Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar* const table)
+{
+	// accept only char type matrices
+	CV_Assert(I.depth() == CV_8U);
+	const int channels = I.channels();
+	switch (channels)
+	{
+	case 1:
+	{
+		for (int i = 0; i < I.rows; ++i)
+			for (int j = 0; j < I.cols; ++j)
+				I.at<uchar>(i, j) = table[I.at<uchar>(i, j)];
+		break;
+	}
+	case 3:
+	{
+		Mat_<Vec3b> _I = I;
+		for (int i = 0; i < I.rows; ++i)
+			for (int j = 0; j < I.cols; ++j)
+			{
+				_I(i, j)[0] = table[_I(i, j)[0]];
+				_I(i, j)[1] = table[_I(i, j)[1]];
+				_I(i, j)[2] = table[_I(i, j)[2]];
+			}
+		I = _I;
+		break;
+	}
+	}
+	return I;
+}
+
+
+
+////////////////////////ÅòÕÍÓë¸¯Ê´/////////////////////
+void ErodingAndDilating(const Mat& src, Mat& img, int& para)
+{
+	img.create(src.size(), src.type());
+
+	int const nChanels = src.channels();
+
+	double  maxValue, minValue;
+ 
+	for (int j = 1; j < src.rows - 1; ++j)
+	{
+		const uchar* previous = src.ptr<uchar>(j - 1);
+		const uchar* current = src.ptr<uchar>(j);
+		const uchar* next = src.ptr<uchar>(j + 1);
+
+		uchar* output = img.ptr<uchar>(j);//»ñÈ¡outputµÄÊ×µØÖ·
+		
+
+		for (int i = nChanels; i < nChanels*src.cols; ++i)//´ÓµÚ3¸öÏñËØÖµ¿ªÊ¼£¬¼´±ß¿òÏñËØ²»¼ÆËã
+		{
+
+			Mat C_rank = (Mat_<uchar>(1, 9) << current[i], previous[i], next[i],
+				current[i - nChanels], previous[i - nChanels], next[i - nChanels],
+				current[i + nChanels], previous[i + nChanels], next[i + nChanels]);
+
+			minMaxIdx(C_rank, &minValue, &maxValue);//ÕâÀï²ÎÊıÎªµØÖ·
+
+			switch (para)
+			{
+			case 1:
+				*output++ = maxValue;
+
+
+			case 0:
+				*output++ = minValue;
+			}
+			
+		}
+	}
+
+	img.row(0).setTo(Scalar(0));//0ĞĞ
+	img.row(img.rows - 1).setTo(Scalar(0));//rows-1ĞĞ¼´×îºóÒ»ĞĞ
+	img.col(0).setTo(Scalar(0));//0ÁĞ
+	img.col(img.cols - 1).setTo(Scalar(0));//cols-1ÁĞ£¬¼´×îºóÒ»ÁĞ
+
+}
