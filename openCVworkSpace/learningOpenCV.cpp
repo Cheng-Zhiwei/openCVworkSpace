@@ -350,10 +350,6 @@
 
 
 
-
-
-
-
 //#include <opencv2/core.hpp> 
 //#include <opencv2/core/utility.hpp>  
 //#include "opencv2/imgcodecs.hpp" 
@@ -1313,49 +1309,155 @@ using namespace cv;
 
 ///////////////////////////////////////阈值操作//////////////////////////////
 
-#include "iostream"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include "tools.h"
+//#include "iostream"
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//#include "tools.h"
+//
+//using namespace std;
+//using namespace cv;
+//
+//
+//int main()
+//{
+//	Mat img_src, img_gray, img_clone, img_dst, img_dst_official;
+//	int arr[5] = { 0,1,2,3,4 };
+//	int len = sizeof(arr) / sizeof(arr[0]);//obtain the length of arr
+//	int const  threshold_value = 50;
+//	int const  max_binary_value = 255;
+//
+//	
+//	img_src = imread("E:\\openCV_Pictures\\fig10_dog.jpg");
+//
+//
+//
+//	//当img_src.data=0，0代表false，！0就是true，即当图像为空时，程序结束返回-1；
+//	if (!img_src.data)
+//	{
+//		cout << "The image is empty!" << endl;
+//		return -1;
+//	}
+//
+//	cvtColor(img_src, img_gray, COLOR_RGB2GRAY);
+//
+//	imshow("input", img_gray);
+//	
+//
+//	for (int i=0; i<len; ++i)
+//	{
+//		img_clone = img_gray.clone();
+//		thresholdOperation(img_clone, arr[i], threshold_value);
+//
+//		//输入图像；输出图像；阈值；最大值；阈值算法的类型（供计5种）
+//		threshold(img_clone, img_dst_official, threshold_value, max_binary_value, arr[i]);
+//		
+//		namedWindow("myMethod", 1);
+//		namedWindow("official", 1);
+//		
+//		imshow("myMethod", img_clone);
+//		imshow("official", img_dst_official);
+//
+//		waitKey(0);
+//	}
+//		
+//	return 0;
+//
+//}
 
-using namespace std;
+
+
+//////////////////////////////////////线性滤波///////////////////
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include <stdlib.h>
+#include <stdio.h>
+
 using namespace cv;
+
+
+//int main()
+//{
+//	/// 声明变量
+//	Mat src, dst;
+//
+//	Mat kernel;
+//	Point anchor;//锚点
+//	double delta;
+//	int ddepth;
+//	int kernel_size;
+//	char window_name[] = "filter2D Demo";
+//
+//	int c;
+//
+//	/// 载入图像
+//	src = imread("E:\\openCV_Pictures\\dragon.jpg");
+//
+//	if (!src.data)
+//	{
+//		return -1;
+//	}
+//
+//	/// 创建窗口
+//	namedWindow(window_name, 0);
+//
+//	/// 初始化滤波器参数
+//	anchor = Point(-1, -1);
+//	delta = 0;
+//	ddepth = -1;
+//
+//	/// 循环 - 每隔0.5秒，用一个不同的核来对图像进行滤波
+//	int ind = 0;
+//	while (true)
+//	{
+//		c = waitKey(500);
+//		/// 按'ESC'可退出程序
+//		if ((char)c == 27)
+//		{
+//			break;
+//		}
+//
+//		/// 更新归一化块滤波器的核大小
+//		kernel_size = 3 + 2 * (ind % 5);
+//		kernel = Mat::ones(kernel_size, kernel_size, CV_32F) / (float)(kernel_size*kernel_size);
+//
+//		/// 使用滤波器
+//		filter2D(src, dst, ddepth, kernel, anchor, delta, BORDER_DEFAULT);
+//		imshow(window_name, dst);
+//		ind++;
+//	}
+//
+//	return 0;
+//}
+
+
 
 
 int main()
 {
-	Mat img_src, img_gray, img_clone, img_dst, img_dst_official;
-	int arr[5] = { 0,1,2,3,4 };
-	int len = sizeof(arr) / sizeof(arr[0]);//obtain the length of arr
-	int const  threshold_value = 50;
-	int const  max_binary_value = 255;
+	Mat img_src, img_dst, kernel;
+	int ksize;
+	Point anchor = Point(-1, -1);//表示核的中心点
+	double delta = 0;
+	int ddepth = -1;//输入图像和输出图像的类型相同
 
-	
-	img_src = imread("E:\\openCV_Pictures\\fig10_dog.jpg");
+	img_src = imread("E:\\openCV_Pictures\\dragon.jpg");
 
-	cvtColor(img_src, img_gray, COLOR_RGB2GRAY);
-
-	imshow("input", img_gray);
-	
-
-	for (int i=0; i<len; ++i)
+	if (!img_src.data)
 	{
-		img_clone = img_gray.clone();
-		thresholdOperation(img_clone, arr[i], threshold_value);
+		return -1;
+	}
 
-		threshold(img_clone, img_dst_official, threshold_value, max_binary_value, arr[i]);
-		
-		namedWindow("myMethod", 1);
-		namedWindow("official", 1);
-		
-		imshow("myMethod", img_clone);
-		imshow("official", img_dst_official);
+	for (int index = 0; index<5; index++)
+	{
+		ksize = 3 + 2 * (index % 5);
+		kernel = Mat::ones(ksize, ksize, CV_32F) / (float)(ksize*ksize);//(float)转换类型
+		filter2D(img_src, img_dst, ddepth, kernel, anchor, delta, BORDER_DEFAULT);
 
+		imshow("img_dst", img_dst);
 		waitKey(0);
 	}
-		
-	return 0;
 
 }
+
 
