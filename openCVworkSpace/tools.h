@@ -37,3 +37,7 @@ Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar* const table);
 
 /*ÅòÕÍÓë¸¯Ê´*/
 void ErodingAndDilating(const Mat& src, Mat& img, int& para);
+
+/*ãĞÖµ²Ù×÷*/
+Mat& thresholdOperation(Mat& I, const int para, const uchar thres);
+

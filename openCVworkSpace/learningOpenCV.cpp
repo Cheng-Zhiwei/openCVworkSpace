@@ -1205,40 +1205,157 @@
 
 
 /////////////////////////////////////膨胀和腐蚀//////////////////////
+//int main()
+//{
+//	int para = 0;
+//	Mat img_src, img_dst, img_dst1;
+//	img_src = imread("E:\\openCV_Pictures\\fig9_font.jpg");
+//
+//	//ErodingAndDilating(img_src, img_dst,para);//para ,1为膨胀，0为腐蚀；
+//
+//
+//	/*形态学操作*/
+//	/*Opening: MORPH_OPEN: 2
+//	Closing : MORPH_CLOSE : 3
+//	Gradient : MORPH_GRADIENT : 4
+//	Top Hat : MORPH_TOPHAT: 5
+//	Black Hat : MORPH_BLACKHAT: 6*/
+//	int arr[5] = { 2,3,4,5,6 };
+//	
+//	Mat element = getStructuringElement(0, Size(3,3), Point(0, 0));
+//
+//	for (int i = 0; i < 5; ++i) 
+//	{
+//		morphologyEx(img_src, img_dst, arr[i], element);
+//
+//		imshow("output", img_dst);
+//		waitKey(0);
+//	}
+//
+//	return 0;
+//}
+
+
+
+
+/////////////////////////////////图像金字塔////////////////////////////////////
+
+
+#include "iostream"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+
+using namespace std;
+using namespace cv;
+
+//const char* window_name = "Pyramids Demo";
+//int main()
+//{
+//	
+//	const char* filename = "E:\\openCV_Pictures\\fig5_classical.jpg";
+//	
+//
+//	Mat src = imread(filename);
+//
+//	// Check if image is loaded fine
+//	if (src.empty()) {
+//		printf(" Error opening image, Please reload!\n");
+//		return -1;
+//	}
+//
+//	for (;;)
+//	{
+//		imshow(window_name, src);
+//		char c = (char)waitKey(0);
+//		if (c == "p")
+//		{
+//			break;
+//		}
+//		else if (c == 'i') //上采样
+//		{
+//			pyrUp(src, src, Size(src.cols * 2, src.rows * 2));
+//			printf("** Zoom In: Image x 2 \n");
+//		}
+//		else if (c == 'o')//下采样
+//		{
+//			pyrDown(src, src, Size(src.cols / 2, src.rows / 2));
+//			printf("** Zoom Out: Image / 2 \n");
+//		}
+//	}
+//
+//	system("pause");
+//	return 0;
+//}
+
+
+//int main()
+//{
+//	Mat src, dst;
+//
+//	src = imread("E:\\openCV_Pictures\\fig10_dog.jpg");
+//
+//
+//	for (int i = 0; i < 8; i++)
+//	{
+//	/*	pyrDown(src, src, Size(src.cols / 2, src.rows / 2));*/
+//		pyrUp(src, src, Size(src.cols * 2, src.rows * 2));
+//
+//
+//		namedWindow("input", 0);
+//		imshow("input", src);
+//		waitKey(0);
+//	}	
+//
+//}
+
+
+
+///////////////////////////////////////阈值操作//////////////////////////////
+
+#include "iostream"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include "tools.h"
+
+using namespace std;
+using namespace cv;
+
+
 int main()
 {
-	int para = 0;
-	Mat img_src, img_dst, img_dst1;
-	img_src = imread("E:\\openCV_Pictures\\fig9_font.jpg");
+	Mat img_src, img_gray, img_clone, img_dst, img_dst_official;
+	int arr[5] = { 0,1,2,3,4 };
+	int len = sizeof(arr) / sizeof(arr[0]);//obtain the length of arr
+	int const  threshold_value = 50;
+	int const  max_binary_value = 255;
 
-	//ErodingAndDilating(img_src, img_dst,para);//para ,1为膨胀，0为腐蚀；
-
-
-	/*形态学操作*/
-	/*Opening: MORPH_OPEN: 2
-	Closing : MORPH_CLOSE : 3
-	Gradient : MORPH_GRADIENT : 4
-	Top Hat : MORPH_TOPHAT: 5
-	Black Hat : MORPH_BLACKHAT: 6*/
-	int arr[5] = { 2,3,4,5,6 };
 	
-	Mat element = getStructuringElement(0, Size(3,3), Point(0, 0));
+	img_src = imread("E:\\openCV_Pictures\\fig10_dog.jpg");
 
-	for (int i = 0; i < 5; ++i) 
+	cvtColor(img_src, img_gray, COLOR_RGB2GRAY);
+
+	imshow("input", img_gray);
+	
+
+	for (int i=0; i<len; ++i)
 	{
-		morphologyEx(img_src, img_dst, arr[i], element);
+		img_clone = img_gray.clone();
+		thresholdOperation(img_clone, arr[i], threshold_value);
 
-		imshow("output", img_dst);
+		threshold(img_clone, img_dst_official, threshold_value, max_binary_value, arr[i]);
+		
+		namedWindow("myMethod", 1);
+		namedWindow("official", 1);
+		
+		imshow("myMethod", img_clone);
+		imshow("official", img_dst_official);
+
 		waitKey(0);
 	}
-
+		
 	return 0;
+
 }
-
-
-
-
-
-
-
 

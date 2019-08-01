@@ -346,3 +346,73 @@ void ErodingAndDilating(const Mat& src, Mat& img, int& para)
 	img.col(img.cols - 1).setTo(Scalar(0));//cols-1列，即最后一列
 
 }
+
+
+
+
+////////////////////////阈值操作/////////////////////
+Mat& thresholdOperation(Mat& I, const int para, const uchar thres)
+{	
+	
+	CV_Assert(I.depth() == CV_8U);
+	
+	for (int i = 0; i < I.rows; ++i)
+	{
+		for (int j = 0; j < I.cols; ++j)
+		{
+			if (para == 0)//二进制阈值化
+			{
+				if (I.at<uchar>(i, j) > thres)
+					I.at<uchar>(i, j) = 255;
+				else 
+					I.at<uchar>(i, j) = 0;
+			}
+				 
+		
+			else if (para == 1)//反二进制阈值化
+			{
+				{
+					if (I.at<uchar>(i, j) > thres)
+						I.at<uchar>(i, j) = 0;
+					else
+						I.at<uchar>(i, j) = 255;
+				}
+			}
+
+			else if (para == 2)//截断阈值化
+			{
+				{
+					if (I.at<uchar>(i, j) > thres)
+						I.at<uchar>(i, j) = thres;
+					else
+						I.at<uchar>(i, j) = I.at<uchar>(i, j);
+				}
+			}
+
+			else if (para == 3)//阈值化为0
+			{
+				{
+					if (I.at<uchar>(i, j) > thres)
+						I.at<uchar>(i, j) = I.at<uchar>(i, j);
+					else
+						I.at<uchar>(i, j) = 0;
+				}
+			}
+
+			else if (para == 4)//反阈值化为0
+			{
+				{
+					if (I.at<uchar>(i, j) > thres)
+						I.at<uchar>(i, j) = 0;
+					else
+						I.at<uchar>(i, j) = I.at<uchar>(i, j);
+				}
+			}
+
+		}
+	}
+		
+		
+	return I;
+
+}
