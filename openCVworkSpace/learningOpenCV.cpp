@@ -1237,13 +1237,13 @@
 /////////////////////////////////图像金字塔////////////////////////////////////
 
 
-#include "iostream"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-
-using namespace std;
-using namespace cv;
+//#include "iostream"
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//
+//using namespace std;
+//using namespace cv;
 
 //const char* window_name = "Pyramids Demo";
 //int main()
@@ -1368,12 +1368,12 @@ using namespace cv;
 
 
 //////////////////////////////////////线性滤波///////////////////
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include <stdlib.h>
-#include <stdio.h>
-
-using namespace cv;
+//#include "opencv2/imgproc/imgproc.hpp"
+//#include "opencv2/highgui/highgui.hpp"
+//#include <stdlib.h>
+//#include <stdio.h>
+//
+//using namespace cv;
 
 
 //int main()
@@ -1431,33 +1431,161 @@ using namespace cv;
 //}
 
 
+/*byMyself*/
+//
+//int main()
+//{
+//	Mat img_src, img_dst, kernel;
+//	int ksize;
+//	Point anchor = Point(-1, -1);//表示核的中心点
+//	double delta = 0;
+//	int ddepth = -1;//输入图像和输出图像的类型相同
+//
+//	img_src = imread("E:\\openCV_Pictures\\dragon.jpg");
+//
+//	if (!img_src.data)
+//	{
+//		return -1;
+//	}
+//
+//	for (int index = 0; index<5; index++)
+//	{
+//		ksize = 3 + 2 * (index % 5);
+//
+//		//建立核矩阵
+//		kernel = Mat::ones(ksize, ksize, CV_32F) / (float)(ksize*ksize);//(float)转换类型
+//		filter2D(img_src, img_dst, ddepth, kernel, anchor, delta, BORDER_DEFAULT);
+//
+//		imshow("img_dst", img_dst);
+//		waitKey(0);
+//	}
+//
+//}
 
 
-int main()
+
+///////////////////////////////////给图像添加边界//////////////////////////////////
+
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+
+
+using namespace cv;
+// Declare the variables
+Mat src, dst;
+int top, bottom;
+
+int borderType = BORDER_CONSTANT;
+const char* window_name = "copyMakeBorder Demo";
+RNG rng(12345);//rng ，这是一个随机数生成器， 用来产生随机边界色彩。12345是随机种子编号
+
+int main(int argc, char** argv)
 {
-	Mat img_src, img_dst, kernel;
-	int ksize;
-	Point anchor = Point(-1, -1);//表示核的中心点
-	double delta = 0;
-	int ddepth = -1;//输入图像和输出图像的类型相同
+	
+	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
 
-	img_src = imread("E:\\openCV_Pictures\\dragon.jpg");
 
-	if (!img_src.data)
-	{
+	// Check if image is loaded fine
+	if (src.empty()) {
+		printf(" Error opening image\n");
+		printf(" Program Arguments: [image_name -- default ../data/lena.jpg] \n");
 		return -1;
 	}
 
-	for (int index = 0; index<5; index++)
+	/*if (!src.data)
 	{
-		ksize = 3 + 2 * (index % 5);
-		kernel = Mat::ones(ksize, ksize, CV_32F) / (float)(ksize*ksize);//(float)转换类型
-		filter2D(img_src, img_dst, ddepth, kernel, anchor, delta, BORDER_DEFAULT);
+		printf("The image is not exist！")；
+		return -1；
+	}*/
 
-		imshow("img_dst", img_dst);
-		waitKey(0);
+
+	// Brief how-to for this program
+	printf("\n \t copyMakeBorder Demo: \n");
+	printf("\t -------------------- \n");
+	printf(" ** Press 'c' to set the border to a random constant value \n");
+	printf(" ** Press 'r' to set the border to be replicated \n");
+	printf(" ** Press 'ESC' to exit the program \n");
+	namedWindow(window_name, WINDOW_AUTOSIZE);
+	
+	// Initialize arguments for the filter，边框的宽度
+	top = (int)(0.05*src.rows); 
+	bottom = top;
+	int left = (int)(0.05*src.cols); 
+	int right = left;
+	
+	for (;;)
+	{
+		Scalar value(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));//边界的像素值范围
+
+		copyMakeBorder(src, dst, top, bottom, left, right, borderType, value);
+		imshow(window_name, dst);
+		
+		char c = (char)waitKey(500);
+		if (c == 27)
+		{
+			break;
+		}
+		else if (c == 'c')
+		{
+			borderType = BORDER_CONSTANT;
+		}
+		else if (c == 'r')
+		{
+			borderType = BORDER_REPLICATE;
+		}
 	}
-
+	return 0;
 }
+
+
+/*byMyself*/
+//int main()
+//{
+//
+//	Mat img_src, img_dst;
+//	RNG rng(1234);
+//	int top, bottom, left, right;
+//	int borderType = BORDER_CONSTANT;
+//
+//	img_src = imread("E:\\openCV_Pictures\\fig5_classical.jpg");
+//
+//	if (!img_src.data)
+//	{
+//		return -1;
+//	}
+//
+//	top = (int)img_src.rows*0.05;
+//	top = bottom;
+//	right = (int)img_src.cols*0.05;
+//	left = right;
+//
+//	for (;;)
+//	{
+//		Scalar value = (rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+//		copyMakeBorder(img_src, img_dst, top, bottom, left, right, borderType, value);
+//
+//		char c = (char)waitKey(500);
+//		if (c == 27)
+//		{
+//			break;
+//		}
+//		else if (c == 'c')
+//		{
+//			borderType = BORDER_CONSTANT;
+//		}
+//		else if (c == 'r')
+//		{
+//			borderType = BORDER_REPLICATE;
+//		}
+//
+//	}
+//
+//	return 0;
+//}
+
+
+
+
 
 
