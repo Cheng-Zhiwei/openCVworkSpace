@@ -1469,74 +1469,74 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
-
-
-using namespace cv;
-// Declare the variables
-Mat src, dst;
-int top, bottom;
-
-int borderType = BORDER_CONSTANT;
-const char* window_name = "copyMakeBorder Demo";
-RNG rng(12345);//rng ，这是一个随机数生成器， 用来产生随机边界色彩。12345是随机种子编号
-
-int main(int argc, char** argv)
-{
-	
-	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
-
-
-	// Check if image is loaded fine
-	if (src.empty()) {
-		printf(" Error opening image\n");
-		printf(" Program Arguments: [image_name -- default ../data/lena.jpg] \n");
-		return -1;
-	}
-
-	/*if (!src.data)
-	{
-		printf("The image is not exist！")；
-		return -1；
-	}*/
-
-
-	// Brief how-to for this program
-	printf("\n \t copyMakeBorder Demo: \n");
-	printf("\t -------------------- \n");
-	printf(" ** Press 'c' to set the border to a random constant value \n");
-	printf(" ** Press 'r' to set the border to be replicated \n");
-	printf(" ** Press 'ESC' to exit the program \n");
-	namedWindow(window_name, WINDOW_AUTOSIZE);
-	
-	// Initialize arguments for the filter，边框的宽度
-	top = (int)(0.05*src.rows); 
-	bottom = top;
-	int left = (int)(0.05*src.cols); 
-	int right = left;
-	
-	for (;;)
-	{
-		Scalar value(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));//边界的像素值范围
-
-		copyMakeBorder(src, dst, top, bottom, left, right, borderType, value);
-		imshow(window_name, dst);
-		
-		char c = (char)waitKey(500);
-		if (c == 27)
-		{
-			break;
-		}
-		else if (c == 'c')
-		{
-			borderType = BORDER_CONSTANT;
-		}
-		else if (c == 'r')
-		{
-			borderType = BORDER_REPLICATE;
-		}
-	}
-	return 0;
-}
+//
+//
+//using namespace cv;
+//// Declare the variables
+//Mat src, dst;
+//int top, bottom;
+//
+//int borderType = BORDER_CONSTANT;
+//const char* window_name = "copyMakeBorder Demo";
+//RNG rng(12345);//rng ，这是一个随机数生成器， 用来产生随机边界色彩。12345是随机种子编号
+//
+//int main(int argc, char** argv)
+//{
+//	
+//	src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
+//
+//
+//	// Check if image is loaded fine
+//	if (src.empty()) {
+//		printf(" Error opening image\n");
+//		printf(" Program Arguments: [image_name -- default ../data/lena.jpg] \n");
+//		return -1;
+//	}
+//
+//	/*if (!src.data)
+//	{
+//		printf("The image is not exist！")；
+//		return -1；
+//	}*/
+//
+//
+//	// Brief how-to for this program
+//	printf("\n \t copyMakeBorder Demo: \n");
+//	printf("\t -------------------- \n");
+//	printf(" ** Press 'c' to set the border to a random constant value \n");
+//	printf(" ** Press 'r' to set the border to be replicated \n");
+//	printf(" ** Press 'ESC' to exit the program \n");
+//	namedWindow(window_name, WINDOW_AUTOSIZE);
+//	
+//	// Initialize arguments for the filter，边框的宽度
+//	top = (int)(0.05*src.rows); 
+//	bottom = top;
+//	int left = (int)(0.05*src.cols); 
+//	int right = left;
+//	
+//	for (;;)
+//	{
+//		Scalar value(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));//边界的像素值范围
+//
+//		copyMakeBorder(src, dst, top, bottom, left, right, borderType, value);
+//		imshow(window_name, dst);
+//		
+//		char c = (char)waitKey(500);
+//		if (c == 27)
+//		{
+//			break;
+//		}
+//		else if (c == 'c')
+//		{
+//			borderType = BORDER_CONSTANT;
+//		}
+//		else if (c == 'r')
+//		{
+//			borderType = BORDER_REPLICATE;
+//		}
+//	}
+//	return 0;
+//}
 
 
 /*byMyself*/
@@ -1589,3 +1589,29 @@ int main(int argc, char** argv)
 
 
 
+
+int main()
+{
+
+	Mat img_src1,  img_src2, img_dst;
+	
+
+	img_src1 = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 0);//单通道图
+	img_src2 = imread("E:\\openCV_Pictures\\fig5_classical2.jpg", 0);
+
+	imshow("input1", img_src1);
+	imshow("input2", img_src2);
+
+	if (img_src1.empty() || img_src2.empty())
+	{
+		return -1;
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		compare(img_src1, img_src2, img_dst, i);
+		imshow("output", img_dst);
+		waitKey(0);
+	}
+
+}
