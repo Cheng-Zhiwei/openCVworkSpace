@@ -410,9 +410,7 @@ Mat& thresholdOperation(Mat& I, const int para, const uchar thres)
 			}
 
 		}
-	}
-		
+	}	
 		
 	return I;
-
 }

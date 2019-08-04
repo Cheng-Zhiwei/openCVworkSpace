@@ -1585,33 +1585,203 @@
 //}
 
 
+/////////////////////////////CV::Mat.compare（），逐像素比较//////////////////////////
 
 
 
 
+//int main()
+//{
+//
+//	Mat img_src1,  img_src2, img_dst;
+//	
+//
+//	img_src1 = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 0);//单通道图
+//	img_src2 = imread("E:\\openCV_Pictures\\fig5_classical2.jpg", 0);
+//
+//	imshow("input1", img_src1);
+//	imshow("input2", img_src2);
+//
+//	if (img_src1.empty() || img_src2.empty())
+//	{
+//		return -1;
+//	}
+//
+//	for (int i = 0; i < 6; i++)
+//	{
+//		compare(img_src1, img_src2, img_dst, i);
+//		imshow("output", img_dst);
+//		waitKey(0);
+//
+//	}
+//
+//}
 
+
+
+/////////////////////////////Sobel 导数//////////////////////////
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//#include <iostream>
+//using namespace cv;
+//using namespace std;
+//
+//int main()
+//{
+//
+//	
+//	Mat image, src, src_gray;
+//	Mat grad;
+//	const String window_name = "Sobel Demo - Simple Edge Detector";
+//	int ksize = 3;
+//	int scale = 3;
+//	int delta =0;
+//	int ddepth = CV_16S;
+//
+//	// As usual we load our source image (src)
+//	image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
+//	// Check if image is loaded fine
+//	if (image.empty())
+//	{
+//		return 1;
+//	}
+//	for (;;)
+//	{
+//		// Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
+//		GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
+//		
+//		cvtColor(src, src_gray, COLOR_BGR2GRAY);
+//		Mat grad_x, grad_y;
+//		Mat abs_grad_x, abs_grad_y;
+//		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
+//		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
+//		
+//		// converting back to CV_8U
+//		convertScaleAbs(grad_x, abs_grad_x);
+//		convertScaleAbs(grad_y, abs_grad_y);
+//		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+//		imshow(window_name, grad);
+//
+//		char key = (char)waitKey(0);
+//		if (key == 27)
+//		{
+//			return 0;
+//		}
+//		if (key == 'k' || key == 'K')
+//		{
+//			ksize = ksize < 30 ? ksize + 2 : -1;
+//		}
+//		if (key == 's' || key == 'S')
+//		{
+//			scale++;
+//		}
+//		if (key == 'd' || key == 'D')
+//		{
+//			delta++;
+//		}
+//		if (key == 'r' || key == 'R')
+//		{
+//			scale = 1;
+//			ksize = -1;
+//			delta = 0;
+//		}
+//	}
+//	return 0;
+//}
+
+
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include <iostream>
+using namespace cv;
+using namespace std;
+
+//int main()
+//{
+//
+//	Mat img_src, img_srcf, img_dst, img_dst_moon, img_dst_xy;
+//
+//	img_src = imread("E:\\openCV_Pictures\\moon.jpg", 0);
+//
+//	img_srcf = img_src.clone();
+//
+//	img_srcf.convertTo(img_srcf, CV_32F, 1/ 255.0);
+//
+//
+//	if (img_src.empty())
+//	{
+//		cout << "The image is empty!" << endl;
+//		return -1;
+//	}
+//
+//	int rows = img_src.rows;
+//	int cols = img_src.cols;
+//	
+//
+//	Mat img_sobel = Mat::zeros(rows, cols, CV_32F);
+//	Mat img_sobel_x = Mat::zeros(rows, cols, CV_32F);
+//	Mat img_sobel_y = Mat::zeros(rows, cols, CV_32F);
+//
+//	
+//
+//
+//	for (int i = 0; i < rows - 1; ++i)
+//	{
+//		for (int j = 0; j < cols - 1; ++j)
+//		{
+//			img_sobel_x.at<float>(i, j) = img_srcf.at<float>(i + 1, j) - img_srcf.at<float>(i, j);
+//
+//			img_sobel_y.at<float>(i, j) = img_srcf.at<float>(i, j+1) - img_srcf.at<float>(i, j);
+//			
+//		}
+//	}
+//
+//	add(abs(img_sobel_x), abs(img_sobel_y), img_dst_xy);
+//
+//	img_dst_xy.convertTo(img_dst_xy, CV_8U, 255.0);
+//
+//
+//	add(img_src, img_dst_xy, img_dst_moon);
+//
+//
+//
+//
+//
+//	imshow("input", img_src);
+//	imshow("output", img_dst_moon);
+//	waitKey(0);
+//	destroyAllWindows();
+//}
+
+
+#include <iostream>
+using namespace std;
 int main()
 {
-
-	Mat img_src1,  img_src2, img_dst;
 	
 
-	img_src1 = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 0);//单通道图
-	img_src2 = imread("E:\\openCV_Pictures\\fig5_classical2.jpg", 0);
+	//Mat n = Mat::zeros(3, 3, CV_8U);
 
-	imshow("input1", img_src1);
-	imshow("input2", img_src2);
+	//Mat_<uchar> img = n;
 
-	if (img_src1.empty() || img_src2.empty())
-	{
-		return -1;
-	}
+	//img(0,0) = -1;
+	//img(1, 1) = 300;
 
-	for (int i = 0; i < 6; i++)
-	{
-		compare(img_src1, img_src2, img_dst, i);
-		imshow("output", img_dst);
-		waitKey(0);
-	}
+	
+	uchar m = 1;
+	uchar n = 255;
+	uchar z1,z2;
 
+	z1 = m - n;
+	z2 = m + n;
+
+	//unsigned char的范围是0~255,在用cout输出的时候要显示数字的话记得进行int的强制转化才可以，否则都是输出的字符
+	cout << int(z1) << endl << int(z2);
+
+	system("pause");
+
+	return 0;
+	
 }
