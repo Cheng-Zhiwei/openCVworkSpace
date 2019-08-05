@@ -430,9 +430,6 @@ void  sobelEdgeDetection(Mat& img_src, Mat& img_edge)
 
 	int rows = img_src.rows;
 	int cols = img_src.cols;
-
-
-	
 	
 	Mat_<float> img_x = Mat::zeros(rows, cols, CV_32F);
 	Mat_<float> img_y = Mat::zeros(rows, cols, CV_32F);

@@ -1630,70 +1630,74 @@
 using namespace cv;
 using namespace std;
 
-//int main()
-//{
-//
-//	
-//	Mat image, src, src_gray;
-//	Mat grad;
-//	const String window_name = "Sobel Demo - Simple Edge Detector";
-//	int ksize = 3;
-//	int scale = 3;
-//	int delta =0;
-//	int ddepth = CV_16S;
-//
-//	image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
-//	
-//
-//	if (image.empty())
-//	{
-//		return 1;
-//	}
-//	
-//	for (;;)
-//	{
-//		 //Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
-//		GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
-//		
-//		cvtColor(src, src_gray, COLOR_BGR2GRAY);
-//
-//		Mat grad_x, grad_y;
-//		Mat abs_grad_x, abs_grad_y;
-//		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
-//		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
-//		
-//		//converting back to CV_8U
-//		convertScaleAbs(grad_x, abs_grad_x);
-//		convertScaleAbs(grad_y, abs_grad_y);
-//		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-//		imshow(window_name, grad);
-//
-//		char key = (char)waitKey(0);
-//		if (key == 27)
-//		{
-//			return 0;
-//		}
-//		if (key == 'k' || key == 'K')
-//		{
-//			ksize = ksize < 30 ? ksize + 2 : -1;
-//		}
-//		if (key == 's' || key == 'S')
-//		{
-//			scale++;
-//		}
-//		if (key == 'd' || key == 'D')
-//		{
-//			delta++;
-//		}
-//		if (key == 'r' || key == 'R')
-//		{
-//			scale = 1;
-//			ksize = -1;
-//			delta = 0;
-//		}
-//	}
-//	return 0;
-//}
+int main()
+{
+
+	
+	Mat image, src, src_gray;
+	Mat grad;
+	const String window_name = "Sobel Demo - Simple Edge Detector";
+	int ksize = 3;
+	int scale = 3;
+	int delta =0;
+	int ddepth = CV_16S;
+
+	image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
+	
+
+	//ÅÐ¶ÏÍ¼ÏñÊÇ·ñÎª¿Õ
+	if (image.empty())
+	{
+		return 1;
+	}
+
+	
+	for (;;)
+	{
+		 //Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
+		GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
+		
+		cvtColor(src, src_gray, COLOR_BGR2GRAY);
+
+		Mat grad_x, grad_y;
+		Mat abs_grad_x, abs_grad_y;
+		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
+		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
+		
+		//converting back to CV_8U
+		convertScaleAbs(grad_x, abs_grad_x);
+		convertScaleAbs(grad_y, abs_grad_y);
+		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+		imshow(window_name, grad);
+
+
+
+		char key = (char)waitKey(0);
+		if (key == 27)
+		{
+			return 0;
+		}
+		if (key == 'k' || key == 'K')
+		{
+			ksize = ksize < 30 ? ksize + 2 : -1;
+		}
+		if (key == 's' || key == 'S')
+		{
+			scale++;
+		}
+		if (key == 'd' || key == 'D')
+		{
+			delta++;
+		}
+		if (key == 'r' || key == 'R')
+		{
+			scale = 1;
+			ksize = -1;
+			delta = 0;
+		}
+	}
+	return 0;
+}
 
 
 
@@ -1773,18 +1777,18 @@ using namespace std;
 #include "tools.h"
 
 
-int main()
-{
-	int size = 3;
-	double sigma = 0.8;
-
-	Mat kernel = Mat::zeros(size, size, CV_32F);
-
-	getGaussKernel(size, sigma, kernel);
-
-	cout << kernel << endl;
-
-	system("pause");
-
-}
+//int main()
+//{
+//	int size = 3;
+//	double sigma = 0.8;
+//
+//	Mat kernel = Mat::zeros(size, size, CV_32F);
+//
+//	getGaussKernel(size, sigma, kernel);
+//
+//	cout << kernel << endl;
+//
+//	system("pause");
+//
+//}
 
