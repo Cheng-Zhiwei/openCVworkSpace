@@ -414,3 +414,72 @@ Mat& thresholdOperation(Mat& I, const int para, const uchar thres)
 		
 	return I;
 }
+
+
+
+
+
+////////////////////////sobel算子边缘检测////////////////////////////
+void  sobelEdgeDetection(Mat& img_src, Mat& img_edge)
+{
+
+	/*将uint8（uchar）类型Mat图转换为数据内类型为32F（32位浮点数）
+	转换时利用convertTo()函数尺度因子设置为1/255.0，imshow的float图像素被控制在[0-1]之间
+	要转换8位灰度，尺度因子为255.0*/
+	img_src.convertTo(img_src, CV_32F, 1 / 255.0);
+
+	int rows = img_src.rows;
+	int cols = img_src.cols;
+
+
+	
+	
+	Mat_<float> img_x = Mat::zeros(rows, cols, CV_32F);
+	Mat_<float> img_y = Mat::zeros(rows, cols, CV_32F);
+	Mat_<float> img = img_src;
+
+	for (int i = 0; i < rows - 1; ++i)
+	{
+		for (int j = 0; j < cols - 1; ++j)
+		{
+			img_x(i, j) = img(i + 1, j) - img(i, j);
+			img_y(i, j) = img(i, j + 1) - img(i, j);
+		}
+	}
+
+	add(abs(img_x), abs(img_y), img_edge);
+
+	img_edge.convertTo(img_edge, CV_8U, 255.0);//转换为8位图
+
+	//add(img_src, img_edge, img_dst);//原图像加入边缘图像得到img_dst的增强图像
+
+}
+
+
+
+/*一点Mat& function（）和void function()的体会
+（1）函数中返回的结果，一定是与main函数中直接相关的变量；
+（2）如果返回的是函数的变量则无法传递；
+（3）例如我们要返回的Kernel是main中的变量，经过计算后，kernel中的数值虽然发生了变化但是他们指向的是同一内存地址
+（4）不要试图返回函数方法中的变量*/
+void getGaussKernel(int& size, double& sigma, Mat& Kernel)
+{
+
+	const float pi = 3.141592;
+	int center = size / 2; //向下取整
+	float sum = 0;
+
+	Mat_<float> kernel = Mat::ones(size, size, CV_32F);
+
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+			sum += kernel(i, j) = exp(-((i - center) * (i - center) + (j - center) * (j - center)) / 2.0f * sigma * sigma) 
+			/ (2.0f * pi * sigma * sigma);
+
+	for (int m = 0; m < size; m++)
+		for (int n = 0; n < size; n++)
+			kernel(m, n) /= sum;
+	
+	Kernel = kernel;
+
+}

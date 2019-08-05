@@ -1619,14 +1619,17 @@
 
 
 
-/////////////////////////////Sobel 导数//////////////////////////
-//#include "opencv2/imgproc.hpp"
-//#include "opencv2/imgcodecs.hpp"
-//#include "opencv2/highgui.hpp"
-//#include <iostream>
-//using namespace cv;
-//using namespace std;
-//
+////////////////////////////////////////////////////////////////
+                        /*Sobel 导数*/ 
+////////////////////////////////////////////////////////////////
+
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
+#include <iostream>
+using namespace cv;
+using namespace std;
+
 //int main()
 //{
 //
@@ -1639,25 +1642,27 @@
 //	int delta =0;
 //	int ddepth = CV_16S;
 //
-//	// As usual we load our source image (src)
 //	image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
-//	// Check if image is loaded fine
+//	
+//
 //	if (image.empty())
 //	{
 //		return 1;
 //	}
+//	
 //	for (;;)
 //	{
-//		// Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
+//		 //Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
 //		GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
 //		
 //		cvtColor(src, src_gray, COLOR_BGR2GRAY);
+//
 //		Mat grad_x, grad_y;
 //		Mat abs_grad_x, abs_grad_y;
 //		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
 //		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
 //		
-//		// converting back to CV_8U
+//		//converting back to CV_8U
 //		convertScaleAbs(grad_x, abs_grad_x);
 //		convertScaleAbs(grad_y, abs_grad_y);
 //		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
@@ -1691,24 +1696,24 @@
 //}
 
 
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include <iostream>
-using namespace cv;
-using namespace std;
 
+
+
+////////////////////////////////////////////////sobel by myself//////////////////////////////////
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//#include <iostream>
+//#include "tools.h"
+//using namespace cv;
+//using namespace std;
+//
 //int main()
 //{
 //
-//	Mat img_src, img_srcf, img_dst, img_dst_moon, img_dst_xy;
+//	Mat img_src, img_dst;
 //
-//	img_src = imread("E:\\openCV_Pictures\\moon.jpg", 0);
-//
-//	img_srcf = img_src.clone();
-//
-//	img_srcf.convertTo(img_srcf, CV_32F, 1/ 255.0);
-//
+//	img_src = imread("E:\\openCV_Pictures\\fig5_classical.jpg", 0);
 //
 //	if (img_src.empty())
 //	{
@@ -1716,72 +1721,70 @@ using namespace std;
 //		return -1;
 //	}
 //
-//	int rows = img_src.rows;
-//	int cols = img_src.cols;
-//	
-//
-//	Mat img_sobel = Mat::zeros(rows, cols, CV_32F);
-//	Mat img_sobel_x = Mat::zeros(rows, cols, CV_32F);
-//	Mat img_sobel_y = Mat::zeros(rows, cols, CV_32F);
-//
-//	
-//
-//
-//	for (int i = 0; i < rows - 1; ++i)
-//	{
-//		for (int j = 0; j < cols - 1; ++j)
-//		{
-//			img_sobel_x.at<float>(i, j) = img_srcf.at<float>(i + 1, j) - img_srcf.at<float>(i, j);
-//
-//			img_sobel_y.at<float>(i, j) = img_srcf.at<float>(i, j+1) - img_srcf.at<float>(i, j);
-//			
-//		}
-//	}
-//
-//	add(abs(img_sobel_x), abs(img_sobel_y), img_dst_xy);
-//
-//	img_dst_xy.convertTo(img_dst_xy, CV_8U, 255.0);
-//
-//
-//	add(img_src, img_dst_xy, img_dst_moon);
-//
-//
-//
-//
+//	sobelEdgeDetection(img_src, img_dst);
 //
 //	imshow("input", img_src);
-//	imshow("output", img_dst_moon);
+//	imshow("output", img_dst);
 //	waitKey(0);
 //	destroyAllWindows();
 //}
 
 
-#include <iostream>
-using namespace std;
+
+
+/////////////////////////////////测试uchar运算//////////////////////////////////////////
+//#include <iostream>
+//using namespace std;
+//int main()
+//{
+//	
+//
+//	//Mat n = Mat::zeros(3, 3, CV_8U);
+//
+//	//Mat_<uchar> img = n;
+//
+//	//img(0,0) = -1;
+//	//img(1, 1) = 300;
+//
+//	
+//	uchar m = 1;
+//	uchar n = 255;
+//	uchar z1,z2;
+//
+//	z1 = m - n;
+//	z2 = m + n;
+//
+//	//unsigned char的范围是0~255,在用cout输出的时候要显示数字的话记得进行int的强制转化才可以，否则都是输出的字符
+//	cout << int(z1) << endl << int(z2);
+//
+//	system("pause");
+//
+//	return 0;
+//	
+//}
+
+
+///////////////////生成高斯核/////////////////////////////////
+
+/*长的表达式中注意不同数据的类型的计算时的转换，最后把他们统一为同一类型，
+如果无法统一，低级的数据类型会向高级的数据类型转换，注意整体之间的运算出现
+如果小于0时，会认为是0，如果整数有带小数则默认去掉，向下取整，因为如果出现
+负数和小数就用float和double*/
+#include "tools.h"
+
+
 int main()
 {
-	
+	int size = 3;
+	double sigma = 0.8;
 
-	//Mat n = Mat::zeros(3, 3, CV_8U);
+	Mat kernel = Mat::zeros(size, size, CV_32F);
 
-	//Mat_<uchar> img = n;
+	getGaussKernel(size, sigma, kernel);
 
-	//img(0,0) = -1;
-	//img(1, 1) = 300;
-
-	
-	uchar m = 1;
-	uchar n = 255;
-	uchar z1,z2;
-
-	z1 = m - n;
-	z2 = m + n;
-
-	//unsigned char的范围是0~255,在用cout输出的时候要显示数字的话记得进行int的强制转化才可以，否则都是输出的字符
-	cout << int(z1) << endl << int(z2);
+	cout << kernel << endl;
 
 	system("pause");
 
-	return 0;
-	
 }
+

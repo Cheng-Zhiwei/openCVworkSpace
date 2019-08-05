@@ -41,3 +41,8 @@ void ErodingAndDilating(const Mat& src, Mat& img, int& para);
 /*ãĞÖµ²Ù×÷*/
 Mat& thresholdOperation(Mat& I, const int para, const uchar thres);
 
+/*sobelËã×Ó*/
+void  sobelEdgeDetection(Mat& img_src, Mat& img_edge);
+
+/*GaussºË*/
+void getGaussKernel(int& size, double& sigma, Mat& Kernel);
