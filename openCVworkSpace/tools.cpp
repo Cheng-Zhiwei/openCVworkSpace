@@ -425,7 +425,8 @@ void  sobelEdgeDetection(Mat& img_src, Mat& img_edge)
 
 	/*将uint8（uchar）类型Mat图转换为数据内类型为32F（32位浮点数）
 	转换时利用convertTo()函数尺度因子设置为1/255.0，imshow的float图像素被控制在[0-1]之间
-	要转换8位灰度，尺度因子为255.0*/
+	要转换8位灰度，尺度因子为255.0,这里的设置只是为了imshow可以显示图片，实际转换时不需要做尺度
+	因子*/
 	img_src.convertTo(img_src, CV_32F, 1 / 255.0);
 
 	int rows = img_src.rows;

@@ -1630,74 +1630,98 @@
 using namespace cv;
 using namespace std;
 //
-//int main()
-//{
-//
-//	
-//	Mat image, src, src_gray;
-//	Mat grad;
-//	const String window_name = "Sobel Demo - Simple Edge Detector";
-//	int ksize = 3;
-//	int scale = 3;
-//	int delta =0;
-//	int ddepth = CV_16S;
-//
-//	image = imread("E:\\openCV_Pictures\\fig5_classical.jpg", IMREAD_COLOR); // Load an image
-//	
-//
-//	//判断图像是否为空
-//	if (image.empty())
-//	{
-//		return 1;
-//	}
-//
-//	
-//	for (;;)
-//	{
-//		 //Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
-//		GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
-//		
-//		cvtColor(src, src_gray, COLOR_BGR2GRAY);
-//
-//		Mat grad_x, grad_y;
-//		Mat abs_grad_x, abs_grad_y;
-//		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
-//		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
-//		
-//		//converting back to CV_8U
-//		convertScaleAbs(grad_x, abs_grad_x);
-//		convertScaleAbs(grad_y, abs_grad_y);
-//		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
-//		imshow(window_name, grad);
-//
-//
-//
-//		char key = (char)waitKey(0);
-//		if (key == 27)
-//		{
-//			return 0;
-//		}
-//		if (key == 'k' || key == 'K')
-//		{
-//			ksize = ksize < 30 ? ksize + 2 : -1;
-//		}
-//		if (key == 's' || key == 'S')
-//		{
-//			scale++;
-//		}
-//		if (key == 'd' || key == 'D')
-//		{
-//			delta++;
-//		}
-//		if (key == 'r' || key == 'R')
-//		{
-//			scale = 1;
-//			ksize = -1;
-//			delta = 0;
-//		}
-//	}
-//	return 0;
-//}
+int main()
+{
+
+	
+	Mat image, src, src_gray;
+	Mat grad;
+
+	int ksize = 3;
+	int scale = 3;
+	int delta =0;
+	int ddepth = CV_16S;
+
+	image = imread("E:\\openCV_Pictures\\house.png", IMREAD_COLOR); // Load an image
+	
+
+	//判断图像是否为空
+	if (image.empty())
+	{
+		return -1;
+	}
+
+	
+	/*for (;;)
+	{*/
+		 //Remove noise by blurring with a Gaussian filter ( kernel size = 3 )
+		/*GaussianBlur(image, src, Size(3, 3), 0, 0, BORDER_DEFAULT);*/
+		
+		cvtColor(image, src_gray, COLOR_BGR2GRAY);
+
+		Mat grad_x, grad_y;
+		Mat abs_grad_x, abs_grad_y;
+		Sobel(src_gray, grad_x, ddepth, 1, 0, ksize, scale, delta, BORDER_DEFAULT);
+		Sobel(src_gray, grad_y, ddepth, 0, 1, ksize, scale, delta, BORDER_DEFAULT);
+		
+	/*	double maxVal_x, maxVal_y, minVal_x, minVal_y;
+		int maxVal_x1[2] = {}, maxVal_y1[2] = {}, minVal_x1[2] = {}, minVal_y1[2] = {};
+		minMaxIdx(abs(grad_x), &minVal_x, &maxVal_x, minVal_x1, maxVal_x1);
+		minMaxIdx(abs(grad_y), &minVal_y, &maxVal_y, minVal_y1, maxVal_y1);*/
+
+
+
+		double maxVal_x, maxVal_y, minVal_x, minVal_y;
+		cv::Point maxVal_x1 , maxVal_y1, minVal_x1, minVal_y1;
+		cv::minMaxLoc(grad_x, &minVal_x, &maxVal_x, &minVal_x1, &maxVal_x1);
+		cv::minMaxLoc(grad_y, &minVal_y, &maxVal_y, &minVal_y1, &maxVal_y1);
+
+
+		//converting back to CV_8U
+		convertScaleAbs(grad_x, abs_grad_x);//负数变整数，超过255，变255
+		convertScaleAbs(grad_y, abs_grad_y);
+		addWeighted(abs_grad_x, 1, abs_grad_y, 1, 0, grad);
+
+		
+		imshow("grad_x_NoAbs", grad_x);
+		imshow("grad_y_NoAbs", grad_y);
+		imshow("grad_x_Abs", abs_grad_x);
+		imshow("grad_y_Abs", abs_grad_y);
+		imshow("grad_xy_weight", grad);
+	
+
+		waitKey(0);
+		
+		
+
+
+
+	//	char key = (char)waitKey(0);
+	//	if (key == 27)
+	//	{
+	//		return 0;
+	//	}
+	//	if (key == 'k' || key == 'K')
+	//	{
+	//		ksize = ksize < 30 ? ksize + 2 : -1;
+	//	}
+	//	if (key == 's' || key == 'S')
+	//	{
+	//		scale++;
+	//	}
+	//	if (key == 'd' || key == 'D')
+	//	{
+	//		delta++;
+	//	}
+	//	if (key == 'r' || key == 'R')
+	//	{
+	//		scale = 1;
+	//		ksize = -1;
+	//		delta = 0;
+	//	}
+	//}
+	return 0;
+}
 
 
 
@@ -1794,54 +1818,54 @@ using namespace std;
 
 ////////////////////////////////laplace//////////////////////////////////
 
-int main()
-{
-	Mat img_src, img_float, img_v1, img_v2;
-
-	img_src = imread("E:\\openCV_Pictures\\moon.jpg", 0);
-
-	if (img_src.empty())
-		return -1;
-
-	int rows = img_src.rows;
-	int cols = img_src.cols;
-
-	img_src.convertTo(img_float, CV_32F);
-
-	Mat_<float> img_laplace = Mat::zeros(rows, cols, CV_32F);
-	
-	Mat_<float> img = img_float;
-
-	for (int i = 1; i < rows - 1; i++)
-		for (int j = 1; j < cols - 1; j++)
-			img_laplace(i, j) = 0 * img(i - 1, j - 1) - 1 * img(i - 1, j) + 0 * img(i - 1, j + 1)\
-			- 1 * img(i, j - 1) + 4 * img(i, j) - 1 * img(i, j + 1)\
-			+ 0 * img(i + 1, j - 1) - 1 * img(i + 1, j) + 0 * img(i + 1, j + 1);
-	
-	/*for (int i = 1; i < cols - 1; i++)
-		for (int j = 1; j < rows - 1; j++)
-		{
-			float pix = img_laplace(i, j);
-			if (pix >= 1.0f)
-				img_laplace(i, j) = 1.0f;
-			else if (pix < 0)
-				img_laplace(i, j) = 0.0f;
-			else
-				img_laplace(i, j) = pix;
-		}*/
-	
-	img_v1 = img_float - img_laplace;
-	img_v2 = img_float + img_laplace;
-
-	//转换的时候准备一个新的Mat，不要使用原Mat作为输出的结果
-	img_v1.convertTo(img_v1, CV_8U);
-	img_v2.convertTo(img_v2, CV_8U);
-
-	imshow("input", img_src);
-	imshow("output", img_laplace);
-	imshow("output1", img_v2);
-	waitKey(0);
-
-	return 0;
-
-}
+//int main()
+//{
+//	Mat img_src, img_float, img_v1, img_v2;
+//
+//	img_src = imread("E:\\openCV_Pictures\\moon.jpg", 0);
+//
+//	if (img_src.empty())
+//		return -1;
+//
+//	int rows = img_src.rows;
+//	int cols = img_src.cols;
+//
+//	img_src.convertTo(img_float, CV_32F);
+//
+//	Mat_<float> img_laplace = Mat::zeros(rows, cols, CV_32F);
+//	
+//	Mat_<float> img = img_float;
+//
+//	for (int i = 1; i < rows - 1; i++)
+//		for (int j = 1; j < cols - 1; j++)
+//			img_laplace(i, j) = 0 * img(i - 1, j - 1) - 1 * img(i - 1, j) + 0 * img(i - 1, j + 1)\
+//			- 1 * img(i, j - 1) + 4 * img(i, j) - 1 * img(i, j + 1)\
+//			+ 0 * img(i + 1, j - 1) - 1 * img(i + 1, j) + 0 * img(i + 1, j + 1);
+//	
+//	/*for (int i = 1; i < cols - 1; i++)
+//		for (int j = 1; j < rows - 1; j++)
+//		{
+//			float pix = img_laplace(i, j);
+//			if (pix >= 1.0f)
+//				img_laplace(i, j) = 1.0f;
+//			else if (pix < 0)
+//				img_laplace(i, j) = 0.0f;
+//			else
+//				img_laplace(i, j) = pix;
+//		}*/
+//	
+//	img_v1 = img_float - img_laplace;
+//	img_v2 = img_float + img_laplace;
+//
+//	//转换的时候准备一个新的Mat，不要使用原Mat作为输出的结果
+//	img_v1.convertTo(img_v1, CV_8U);
+//	img_v2.convertTo(img_v2, CV_8U);
+//
+//	imshow("input", img_src);
+//	imshow("output", img_laplace);
+//	imshow("output1", img_v2);
+//	waitKey(0);
+//
+//	return 0;
+//
+//}
