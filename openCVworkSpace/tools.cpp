@@ -481,3 +481,13 @@ void getGaussKernel(int& size, double& sigma, Mat& Kernel)
 	Kernel = kernel;
 
 }
+
+
+Mat kernelX = getGaussianKernel(3, 1);
+cout << kernelX << endl << endl << endl;
+
+Mat kernelY = getGaussianKernel(3, 1);
+cout << kernelY << endl << endl << endl;
+
+Mat G = kernelX * kernelY.t();
+cout << G << endl << endl << endl;
