@@ -511,13 +511,13 @@
 
 
 ///////////////////////////////////////	图像矩阵掩码操作//////////////////////////////////
-//#include <opencv2/imgcodecs.hpp>
-//#include <opencv2/highgui.hpp>
-//#include <opencv2/imgproc.hpp>
-//#include <iostream>
-//
-//using namespace std;
-//using namespace cv;
+////#include <opencv2/imgcodecs.hpp>
+////#include <opencv2/highgui.hpp>
+////#include <opencv2/imgproc.hpp>
+////#include <iostream>
+////
+////using namespace std;
+////using namespace cv;
 //
 ////static void help(char* progName)
 ////{
@@ -1869,3 +1869,51 @@
 //
 
 
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+#include <opencv2/imgcodecs/legacy/constants_c.h>
+using namespace std;
+using namespace cv;
+
+int main() {
+
+
+	
+	Mat img_src, img_dst;
+	
+	
+	img_src = imread("E:\\openCV_Pictures\\finger.jpg", 0);
+
+
+	int blockSize = 10;
+	int constValue = 5;
+	const int maxVal = 255;
+
+	/* 自适应阈值算法
+  0：ADAPTIVE_THRESH_MEAN_C
+  1: ADAPTIVE_THRESH_GAUSSIAN_C
+  阈值类型
+  0: THRESH_BINARY
+  1: THRESH_BINARY_INV */
+
+	int adaptiveMethod = 0;
+	int thresholdType = 1;
+	// 图像自适应阈值操作
+	adaptiveThreshold(img_src, img_dst,maxVal, adaptiveMethod,thresholdType, blockSize,constValue);
+
+
+	imshow("input", img_src);
+	imshow("output", img_dst);
+
+	waitKey(0);
+
+	
+	
+
+	destroyAllWindows();
+
+	return 0;
+
+}
